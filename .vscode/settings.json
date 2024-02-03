@@ -1,0 +1,18 @@
+{
+    "[python]": {
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+        "source.fixAll.ruff": "explicit",
+        "source.organizeImports.ruff": "explicit",
+        "python.linting.mypyEnabled": "explicit"
+      },
+      "editor.defaultFormatter": "charliermarsh.ruff",
+    },
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "ruff.lint.enable": true,
+    "ruff.lint.run": "onType",
+    "mypy-type-checker.path": [
+      ".venv/bin/mypy"
+    ]
+  }
+
