@@ -75,6 +75,8 @@ class GristOrganizationClient(GristBaseClient):
         return orgs
 
     def describe_organization(self) -> OrganizationInfo:
+        if self.selected_org_id is None:
+            raise ValueError("Select org first.")
         org_parsed: Dict[str, Any] = self.request(
             method="get",
             path=f"orgs/{self.selected_org_id}",
@@ -85,6 +87,8 @@ class GristOrganizationClient(GristBaseClient):
         self,
         new_name: str,
     ) -> OrganizationInfo:
+        if self.selected_org_id is None:
+            raise ValueError("Select org first.")
         changes = {"name": new_name}
         org_parsed: Dict[str, Any] = self.request(
             method="patch",
@@ -92,3 +96,5 @@ class GristOrganizationClient(GristBaseClient):
             json=changes,
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
+
+

@@ -118,6 +118,18 @@ def test_describe_organization(
     assert org_details["id"] == 1
 
 
+def test_describe_organization_without_selecting_org(
+    requests_mock: Mocker,
+    grist_client_with_selected_org: GristOrganizationClient,
+) -> None:
+    # Reset the selected_org_id to None
+    grist_client_with_selected_org.selected_org_id = None
+
+    # Test that ValueError is raised when describe_organization is called without selecting an org first
+    with pytest.raises(ValueError, match="Select org first."):
+        grist_client_with_selected_org.describe_organization()
+
+
 def test_base_grist_client_request_with_incorrect_api_key(
     requests_mock: Mocker,
     grist_client_with_selected_org: GristOrganizationClient,
@@ -203,3 +215,15 @@ def test_rename_organization_endpoint(
     assert modified_org["updatedAt"] == datetime.strptime(
         expected_response["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
+
+
+def test_rename_organization_without_selecting_org(
+    requests_mock: Mocker,
+    grist_client_with_selected_org: GristOrganizationClient,
+) -> None:
+    # Reset the selected_org_id to None
+    grist_client_with_selected_org.selected_org_id = None
+
+    # Test that ValueError is raised when rename_organization is called without selecting an org first
+    with pytest.raises(ValueError, match="Select org first."):
+        grist_client_with_selected_org.rename_organization(new_name="New Org Name")
