@@ -6,7 +6,13 @@ import pytest
 from grist_python_sdk.client.organazation import GristOrganizationClient
 from grist_python_sdk.typing.orgs import OrganizationInfo
 from requests_mock import Mocker
-from utils import mock_org_dict, mock_root_url, mock_user_dict
+from utils import (
+    mock_org_dict,
+    mock_org_dict2,
+    mock_org_dict3,
+    mock_root_url,
+    mock_user_dict,
+)
 
 
 def test_init_with_no_organizations(
@@ -44,7 +50,9 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationCl
     org_info = "Example Org"
 
     requests_mock.get(
-        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+        f"{mock_root_url}/api/orgs",
+        json=[mock_org_dict, mock_org_dict2, mock_org_dict3],
+        status_code=200,
     )
     requests_mock.get(
         f"{mock_root_url}/api/orgs/1", json=mock_org_dict, status_code=200
@@ -79,6 +87,16 @@ def test_select_organization_with_invalid_org_info(
         ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
     ):
         grist_client_with_selected_org.select_organization("Nonexistent Org")
+
+
+def test_select_organization_with_duplicate_name(
+    grist_client_with_selected_org: GristOrganizationClient,
+) -> None:
+    with pytest.raises(
+        ValueError,
+        match="Organizations with ID or name 'Example Org 2' found 2 or more.",
+    ):
+        grist_client_with_selected_org.select_organization("Example Org 2")
 
 
 def test_describe_organization(

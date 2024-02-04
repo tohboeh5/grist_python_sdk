@@ -71,7 +71,7 @@ class GristWorkspaceClient(GristOrganizationClient):
                 raise ValueError(f"Workspace with ID or name '{ws_info}' not found")
             else:
                 raise ValueError(
-                    f"Workspace with ID or name '{ws_info}' found 2 or more."
+                    f"Workspaces with ID or name '{ws_info}' found 2 or more."
                 )
 
     def list_workspaces(self, all_organization: bool = False) -> List[WorkspaceInfo]:

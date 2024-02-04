@@ -4,7 +4,14 @@ import pytest
 from grist_python_sdk.client.workspace import GristWorkspaceClient
 from grist_python_sdk.typing.workspaces import WorkspaceInfo
 from requests_mock import Mocker
-from utils import mock_org_dict, mock_root_url, mock_user_dict, mock_ws_dict
+from utils import (
+    mock_org_dict,
+    mock_root_url,
+    mock_user_dict,
+    mock_ws_dict,
+    mock_ws_dict2,
+    mock_ws_dict3,
+)
 
 
 @pytest.fixture
@@ -13,7 +20,9 @@ def grist_workspace_client_with_selected_ws(
 ) -> GristWorkspaceClient:
     api_key = "your_api_key"
     requests_mock.get(
-        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+        f"{mock_root_url}/api/orgs",
+        json=[mock_org_dict],
+        status_code=200,
     )
     requests_mock.get(
         f"{mock_root_url}/api/orgs/1", json=mock_org_dict, status_code=200
@@ -25,7 +34,7 @@ def grist_workspace_client_with_selected_ws(
     )
     requests_mock.get(
         f"{mock_root_url}/api/orgs/1/workspaces",
-        json=[mock_ws_dict],
+        json=[mock_ws_dict, mock_ws_dict2, mock_ws_dict3],
         status_code=200,
     )
     requests_mock.get(
@@ -176,6 +185,16 @@ def test_select_workspace_with_valid_ws_name(
 ) -> None:
     grist_workspace_client_with_selected_ws.select_workspace("Workspace 1")
     assert grist_workspace_client_with_selected_ws.selected_ws_id == 1
+
+
+def test_select_workspace_with_duplicate_name(
+    grist_workspace_client_with_selected_ws: GristWorkspaceClient,
+) -> None:
+    with pytest.raises(
+        ValueError,
+        match="Workspaces with ID or name 'Workspace 2' found 2 or more.",
+    ):
+        grist_workspace_client_with_selected_ws.select_workspace("Workspace 2")
 
 
 def test_select_workspace_with_valid_ws_id(
