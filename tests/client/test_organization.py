@@ -245,11 +245,11 @@ def test_rename_organization_without_selecting_org(
         grist_client_with_selected_org.rename_organization(new_name="New Org Name")
 
 
-def test_list_users_for_organization(
+def test_list_users_of_organization(
     requests_mock: Mocker,
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     # Mocking the request function to simulate a successful modification
-    users = grist_client_with_selected_org.list_users_for_organization()
+    users = grist_client_with_selected_org.list_users_of_organization()
     assert users[0]["id"] == 1
     assert users[0]["name"] == "you@example.com"

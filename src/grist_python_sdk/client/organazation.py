@@ -97,7 +97,7 @@ class GristOrganizationClient(GristBaseClient):
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
 
-    def list_users_for_organization(self) -> List[UserInfo]:
+    def list_users_of_organization(self) -> List[UserInfo]:
         if self.selected_org_id is None:
             raise ValueError("Select org first.")
         users: List[UserInfo] = self.request(
