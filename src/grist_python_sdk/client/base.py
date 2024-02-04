@@ -7,9 +7,12 @@ from requests import request
 
 
 class BaseGristClient:
-    def __init__(self, root_url: str, api_key: str) -> None:
+    def __init__(
+        self, root_url: str, api_key: str, org_info: Optional[str] = None
+    ) -> None:
         self.root_url = root_url
         self.api_key = api_key
+        self.selected_org_id = self.select_organization(org_info)
 
     @property
     def headers_with_auth(self) -> Dict[str, str]:
@@ -22,6 +25,25 @@ class BaseGristClient:
     def get_url(self, path: str) -> str:
         api_url = urljoin(self.root_url, "/api/")
         return urljoin(api_url, path)
+
+    def select_organization(self, org_info: Optional[str]) -> str:
+        orgs = self.get_orgs()
+
+        if not orgs:
+            raise ValueError("No organizations available.")
+
+        if org_info is not None:
+            # If org_info is provided, confirm it is in the available organizations
+            for org in orgs:
+                if org["id"] == org_info or org["name"] == org_info:
+                    return org["id"]
+
+            # If the organization is not found, raise an error
+            raise ValueError(f"Organization with ID or name '{org_info}' not found")
+        else:
+            # If org_info is not provided, let the client select one organization (you can implement your logic here)
+            # For now, just select the first organization
+            return orgs[0]["id"]
 
     def get_orgs(self) -> List[Organization]:
         orgs_parsed: List[Dict[str, Any]] = self.request(
@@ -45,6 +67,15 @@ class BaseGristClient:
                 }
             )
         return orgs
+
+    def get_organization_details(self, org_info: str) -> Organization:
+        orgs = self.get_orgs()
+        for org in orgs:
+            if org["id"] == org_info or org["name"] == org_info:
+                return org
+
+        # If the organization is not found, you can raise an exception or handle as needed
+        raise ValueError(f"Organization with ID or name '{org_info}' not found")
 
     def modify_org_name(
         self,

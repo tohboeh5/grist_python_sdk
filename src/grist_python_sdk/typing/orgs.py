@@ -5,7 +5,7 @@ Access = Literal["owners", "editors", "viewers"]
 
 
 class UserRequired(TypedDict):
-    id: int
+    id: str
     name: str
 
 
@@ -15,7 +15,7 @@ class User(UserRequired, total=False):
 
 
 class Organization(TypedDict):
-    id: int
+    id: str
     name: str
     domain: Optional[str]
     owner: User
