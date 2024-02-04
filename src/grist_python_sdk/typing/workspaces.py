@@ -14,7 +14,7 @@ class DocumentInfo(TypedDict):
 
 
 class WorkspaceInfoRequired(TypedDict):
-    id: int | str
+    id: int
     name: str
     owner: UserInfo
     access: Access
