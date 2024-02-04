@@ -57,7 +57,7 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationCl
     api_key = "your_api_key"
     org_info = "Example Org"
 
-    orgs_response = [
+    orgs_response_list = [
         {
             "id": 1,
             "name": "Example Org",
@@ -68,7 +68,21 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationCl
             "updatedAt": "2019-09-13T15:42:35.000Z",
         },
     ]
-    requests_mock.get(f"{root_url}/api/orgs", json=orgs_response, status_code=200)
+    requests_mock.get(f"{root_url}/api/orgs", json=orgs_response_list, status_code=200)
+
+    orgs_response_describe: Dict[str, Any] = {
+        "id": 1,
+        "name": "Example Org",
+        "domain": "example-domain",
+        "owner": {"id": 1, "name": "Owner Name"},
+        "access": "owners",
+        "createdAt": "2019-09-13T15:42:35.000Z",
+        "updatedAt": "2019-09-13T15:42:35.000Z",
+    }
+
+    requests_mock.get(
+        f"{root_url}/api/orgs/1", json=orgs_response_describe, status_code=200
+    )
 
     return GristOrganizationClient(root_url, api_key, org_info)
 
@@ -99,18 +113,9 @@ def test_select_organization_with_invalid_org_info(
 def test_describe_organization(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
-    org_details = grist_client_with_selected_org.describe_organization(1)
+    org_details = grist_client_with_selected_org.describe_organization()
     assert org_details is not None
     assert org_details["id"] == 1
-
-
-def test_describe_organization_with_invalid_org_info(
-    grist_client_with_selected_org: GristOrganizationClient,
-) -> None:
-    with pytest.raises(
-        ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
-    ):
-        grist_client_with_selected_org.describe_organization("Nonexistent Org")
 
 
 def test_base_grist_client_request_with_incorrect_api_key(

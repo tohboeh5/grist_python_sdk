@@ -81,22 +81,13 @@ class GristOrganizationClient(GristBaseClient):
 
     def describe_organization(
         self,
-        org_info: int | str,
         org_info_key: Optional[Literal["id", "name"]] = None,
     ) -> OrganizationInfo:
-        orgs = self.list_organizations()
-        org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
-
-        # If org_info is provided, confirm it is in the available organizations
-        for org in orgs:
-            if (
-                sum([org[org_info_key_] == org_info for org_info_key_ in org_info_keys])
-                > 0
-            ):
-                return org
-
-        # If the organization is not found, you can raise an exception or handle as needed
-        raise ValueError(f"Organization with ID or name '{org_info}' not found")
+        org_parsed: Dict[str, Any] = self.request(
+            method="get",
+            path=f"orgs/{self.selected_org_id}",
+        )
+        return GristOrganizationClient.parse_organization_info(org_parsed)
 
     def rename_organization(
         self,
