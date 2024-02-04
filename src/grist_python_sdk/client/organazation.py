@@ -96,5 +96,3 @@ class GristOrganizationClient(GristBaseClient):
             json=changes,
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
-
-

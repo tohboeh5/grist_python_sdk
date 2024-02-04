@@ -5,7 +5,7 @@ Access = Literal["owners", "editors", "viewers"]
 
 
 class UserInfoRequired(TypedDict):
-    id: str
+    id: int
     name: str
 
 
