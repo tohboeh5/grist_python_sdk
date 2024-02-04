@@ -20,7 +20,7 @@ class GristWorkspaceClient(GristOrganizationClient):
         self.root_url = root_url
         self.api_key = api_key
         self.select_organization(org_info=org_info, org_info_key=org_info_key)
-        if self._selected_org_id is not None:
+        if self.selected_org_id is not None:
             self.select_workspace(ws_info=ws_info, ws_info_key=ws_info_key)
 
     @staticmethod
@@ -37,7 +37,7 @@ class GristWorkspaceClient(GristOrganizationClient):
     def create_workspace(self, name: str) -> int:
         id: int = self.request(
             method="post",
-            path=f"orgs/{self._selected_org_id}/workspaces",
+            path=f"orgs/{self.selected_org_id}/workspaces",
             params={"name": name},
         )
         self._selected_ws_id = id
@@ -77,10 +77,10 @@ class GristWorkspaceClient(GristOrganizationClient):
     def list_workspaces(self, all_organization: bool = False) -> List[WorkspaceInfo]:
         wss: List[WorkspaceInfo] = []
         if not all_organization:
-            if self._selected_org_id is None:
+            if self.selected_org_id is None:
                 raise ValueError("Select organization first.")
             wss_parsed: List[Dict[str, Any]] = self.request(
-                method="get", path=f"orgs/{self._selected_org_id}/workspaces", params={}
+                method="get", path=f"orgs/{self.selected_org_id}/workspaces", params={}
             )
             for ws_parsed in wss_parsed:
                 wss.append(GristWorkspaceClient.parse_workspace_info(ws_parsed))
@@ -89,7 +89,7 @@ class GristWorkspaceClient(GristOrganizationClient):
             for org in orgs:
                 wss_parsed_now: List[Dict[str, Any]] = self.request(
                     method="get",
-                    path=f"orgs/{self._selected_org_id}/workspaces",
+                    path=f"orgs/{self.selected_org_id}/workspaces",
                     params={},
                 )
                 for ws_parsed in wss_parsed_now:

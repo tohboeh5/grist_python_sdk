@@ -19,6 +19,13 @@ class GristOrganizationClient(GristBaseClient):
         self.api_key = api_key
         self.select_organization(org_info=org_info, org_info_key=org_info_key)
 
+    @property
+    def selected_org_id(self) -> Optional[int | str]:
+        return self._selected_org_id
+
+    def select_org_by_id(self, id: Optional[int | str]) -> None:
+        self._selected_org_id = id
+
     @staticmethod
     def parse_organization_info(org_dict: Dict[str, Any]) -> OrganizationInfo:
         return {
@@ -47,7 +54,7 @@ class GristOrganizationClient(GristBaseClient):
 
         if org_info is not None:
             org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
-            _selected_org_ids: List[int | str] = []
+            selected_org_ids: List[int | str] = []
             # If org_info is provided, confirm it is in the available organizations
             for org in orgs:
                 if (
@@ -59,11 +66,11 @@ class GristOrganizationClient(GristBaseClient):
                     )
                     > 0
                 ):
-                    _selected_org_ids.append(org["id"])
+                    selected_org_ids.append(org["id"])
 
-            if len(_selected_org_ids) == 1:
-                self._selected_org_id = _selected_org_ids[0]
-            elif len(_selected_org_ids) == 0:
+            if len(selected_org_ids) == 1:
+                self.select_org_by_id(selected_org_ids[0])
+            elif len(selected_org_ids) == 0:
                 # If the organization is not found, you can raise an exception or handle as needed
                 raise ValueError(f"Organization with ID or name '{org_info}' not found")
             else:
@@ -81,11 +88,11 @@ class GristOrganizationClient(GristBaseClient):
         return orgs
 
     def describe_organization(self) -> OrganizationInfo:
-        if self._selected_org_id is None:
+        if self.selected_org_id is None:
             raise ValueError("Select org first.")
         org_parsed: Dict[str, Any] = self.request(
             method="get",
-            path=f"orgs/{self._selected_org_id}",
+            path=f"orgs/{self.selected_org_id}",
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
 
@@ -93,21 +100,21 @@ class GristOrganizationClient(GristBaseClient):
         self,
         new_name: str,
     ) -> OrganizationInfo:
-        if self._selected_org_id is None:
+        if self.selected_org_id is None:
             raise ValueError("Select org first.")
         changes = {"name": new_name}
         org_parsed: Dict[str, Any] = self.request(
             method="patch",
-            path=f"orgs/{self._selected_org_id}",
+            path=f"orgs/{self.selected_org_id}",
             json=changes,
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
 
     def list_users_of_organization(self) -> List[UserInfo]:
-        if self._selected_org_id is None:
+        if self.selected_org_id is None:
             raise ValueError("Select org first.")
         users: List[UserInfo] = self.request(
             method="get",
-            path=f"orgs/{self._selected_org_id}/access",
+            path=f"orgs/{self.selected_org_id}/access",
         )["users"]
         return users

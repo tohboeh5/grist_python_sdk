@@ -168,7 +168,7 @@ def test_init_with_no_org_info(
     grist_workspace_client_without_selected_org: GristWorkspaceClient,
 ) -> None:
     # Test that the _selected_ws_id is set to the first workspace in the list
-    assert grist_workspace_client_without_selected_org._selected_org_id is None
+    assert grist_workspace_client_without_selected_org.selected_org_id is None
     assert grist_workspace_client_without_selected_org._selected_ws_id is None
 
 
