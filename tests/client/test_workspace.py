@@ -167,24 +167,24 @@ def test_init_with_no_org_info(
     requests_mock: Mocker,
     grist_workspace_client_without_selected_org: GristWorkspaceClient,
 ) -> None:
-    # Test that the selected_ws_id is set to the first workspace in the list
-    assert grist_workspace_client_without_selected_org.selected_org_id is None
-    assert grist_workspace_client_without_selected_org.selected_ws_id is None
+    # Test that the _selected_ws_id is set to the first workspace in the list
+    assert grist_workspace_client_without_selected_org._selected_org_id is None
+    assert grist_workspace_client_without_selected_org._selected_ws_id is None
 
 
 def test_init_with_no_ws_info(
     requests_mock: Mocker,
     grist_workspace_client_without_selected_ws: GristWorkspaceClient,
 ) -> None:
-    # Test that the selected_ws_id is set to the first workspace in the list
-    assert grist_workspace_client_without_selected_ws.selected_ws_id is None
+    # Test that the _selected_ws_id is set to the first workspace in the list
+    assert grist_workspace_client_without_selected_ws._selected_ws_id is None
 
 
 def test_select_workspace_with_valid_ws_name(
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
     grist_workspace_client_with_selected_ws.select_workspace("Workspace 1")
-    assert grist_workspace_client_with_selected_ws.selected_ws_id == 1
+    assert grist_workspace_client_with_selected_ws._selected_ws_id == 1
 
 
 def test_select_workspace_with_duplicate_name(
@@ -201,7 +201,7 @@ def test_select_workspace_with_valid_ws_id(
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
     grist_workspace_client_with_selected_ws.select_workspace(1)
-    assert grist_workspace_client_with_selected_ws.selected_ws_id == 1
+    assert grist_workspace_client_with_selected_ws._selected_ws_id == 1
 
 
 def test_select_workspace_with_invalid_ws_info(
@@ -262,8 +262,8 @@ def test_describe_workspace_without_selecting_ws(
     requests_mock: Mocker,
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
-    # Reset the selected_ws_id to None
-    grist_workspace_client_with_selected_ws.selected_ws_id = None
+    # Reset the _selected_ws_id to None
+    grist_workspace_client_with_selected_ws._selected_ws_id = None
 
     # Test that ValueError is raised when describe_workspace is called without selecting a workspace first
     with pytest.raises(ValueError, match="Select workspace first."):
@@ -299,8 +299,8 @@ def test_rename_workspace_without_selecting_ws(
     requests_mock: Mocker,
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
-    # Reset the selected_ws_id to None
-    grist_workspace_client_with_selected_ws.selected_ws_id = None
+    # Reset the _selected_ws_id to None
+    grist_workspace_client_with_selected_ws._selected_ws_id = None
 
     # Test that ValueError is raised when rename_workspace is called without selecting a workspace first
     with pytest.raises(ValueError, match="Select workspace first."):
@@ -323,8 +323,8 @@ def test_list_users_of_workspace_without_selecting_ws(
     requests_mock: Mocker,
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
-    # Reset the selected_ws_id to None
-    grist_workspace_client_with_selected_ws.selected_ws_id = None
+    # Reset the _selected_ws_id to None
+    grist_workspace_client_with_selected_ws._selected_ws_id = None
 
     # Test that ValueError is raised when list_users_of_workspace is called without selecting a workspace first
     with pytest.raises(ValueError, match="Select workspace first."):
@@ -335,11 +335,11 @@ def test_create_worlspace(
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
     grist_workspace_client_with_selected_ws.create_workspace("New Workspace Name")
-    assert grist_workspace_client_with_selected_ws.selected_ws_id == 2
+    assert grist_workspace_client_with_selected_ws._selected_ws_id == 2
 
 
 def test_delete_worlspace(
     grist_workspace_client_with_selected_ws: GristWorkspaceClient,
 ) -> None:
     grist_workspace_client_with_selected_ws.delete_workspace()
-    assert grist_workspace_client_with_selected_ws.selected_ws_id is None
+    assert grist_workspace_client_with_selected_ws._selected_ws_id is None

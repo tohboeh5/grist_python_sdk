@@ -40,8 +40,8 @@ def test_init_with_no_org_info(
     grist_client_with_no_org_info = GristOrganizationClient(mock_root_url, api_key)
     # Mock the orgs endpoint to include at least one organization
 
-    # Test that the selected_org_id is set to the first organization in the list
-    assert grist_client_with_no_org_info.selected_org_id is None
+    # Test that the _selected_org_id is set to the first organization in the list
+    assert grist_client_with_no_org_info._selected_org_id is None
 
 
 @pytest.fixture
@@ -70,14 +70,14 @@ def test_select_organization_with_valid_org_name(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     grist_client_with_selected_org.select_organization("Example Org")
-    assert grist_client_with_selected_org.selected_org_id == 1
+    assert grist_client_with_selected_org._selected_org_id == 1
 
 
 def test_select_organization_with_valid_org_id(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     grist_client_with_selected_org.select_organization(1)
-    assert grist_client_with_selected_org.selected_org_id == 1
+    assert grist_client_with_selected_org._selected_org_id == 1
 
 
 def test_select_organization_with_invalid_org_info(
@@ -111,8 +111,8 @@ def test_describe_organization_without_selecting_org(
     requests_mock: Mocker,
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
-    # Reset the selected_org_id to None
-    grist_client_with_selected_org.selected_org_id = None
+    # Reset the _selected_org_id to None
+    grist_client_with_selected_org._selected_org_id = None
 
     # Test that ValueError is raised when describe_organization is called without selecting an org first
     with pytest.raises(ValueError, match="Select org first."):
@@ -175,8 +175,8 @@ def test_rename_organization_without_selecting_org(
     requests_mock: Mocker,
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
-    # Reset the selected_org_id to None
-    grist_client_with_selected_org.selected_org_id = None
+    # Reset the _selected_org_id to None
+    grist_client_with_selected_org._selected_org_id = None
 
     # Test that ValueError is raised when rename_organization is called without selecting an org first
     with pytest.raises(ValueError, match="Select org first."):
@@ -197,8 +197,8 @@ def test_list_users_of_organization_without_selecting_org(
     requests_mock: Mocker,
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
-    # Reset the selected_org_id to None
-    grist_client_with_selected_org.selected_org_id = None
+    # Reset the _selected_org_id to None
+    grist_client_with_selected_org._selected_org_id = None
 
     # Test that ValueError is raised when list_users_of_organization is called without selecting an org first
     with pytest.raises(ValueError, match="Select org first."):
