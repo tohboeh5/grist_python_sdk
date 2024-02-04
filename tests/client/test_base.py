@@ -38,6 +38,24 @@ def test_base_grist_client_request(
     assert result == expected_return_value
 
 
+def test_base_grist_client_request_with_incorrect_api_key(
+    requests_mock: Mocker,
+    grist_client: GristBaseClient,
+) -> None:
+    # Mocking the request function to simulate an incorrect API key error
+    requests_mock.request(
+        method="get",
+        url="https://example.com/api/path",
+        headers=grist_client.headers_with_auth,
+        status_code=401,  # Unauthorized
+        reason="Unauthorized",
+    )
+
+    # Test the request method with an incorrect API key
+    with pytest.raises(Exception, match="Unauthorized"):
+        grist_client.request("get", "path")
+
+
 def test_base_grist_client_headers_with_auth(
     grist_client: GristBaseClient,
 ) -> None:

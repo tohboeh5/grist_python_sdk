@@ -146,24 +146,6 @@ def test_describe_organization_without_selecting_org(
         grist_client_with_selected_org.describe_organization()
 
 
-def test_base_grist_client_request_with_incorrect_api_key(
-    requests_mock: Mocker,
-    grist_client_with_selected_org: GristOrganizationClient,
-) -> None:
-    # Mocking the request function to simulate an incorrect API key error
-    requests_mock.request(
-        method="get",
-        url="https://example.com/api/path",
-        headers=grist_client_with_selected_org.headers_with_auth,
-        status_code=401,  # Unauthorized
-        reason="Unauthorized",
-    )
-
-    # Test the request method with an incorrect API key
-    with pytest.raises(Exception, match="Unauthorized"):
-        grist_client_with_selected_org.request("get", "path")
-
-
 def test_list_orgs_endpoint(
     requests_mock: Mocker, grist_client_with_selected_org: GristOrganizationClient
 ) -> None:
@@ -253,3 +235,15 @@ def test_list_users_of_organization(
     users = grist_client_with_selected_org.list_users_of_organization()
     assert users[0]["id"] == 1
     assert users[0]["name"] == "you@example.com"
+
+
+def test_list_users_of_organization_without_selecting_org(
+    requests_mock: Mocker,
+    grist_client_with_selected_org: GristOrganizationClient,
+) -> None:
+    # Reset the selected_org_id to None
+    grist_client_with_selected_org.selected_org_id = None
+
+    # Test that ValueError is raised when list_users_of_organization is called without selecting an org first
+    with pytest.raises(ValueError, match="Select org first."):
+        grist_client_with_selected_org.list_users_of_organization()
