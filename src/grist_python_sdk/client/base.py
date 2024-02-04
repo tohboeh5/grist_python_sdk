@@ -8,7 +8,7 @@ from requests import request
 
 class BaseGristClient:
     def __init__(
-        self, root_url: str, api_key: str, org_info: Optional[str] = None
+        self, root_url: str, api_key: str, org_info: Optional[int | str] = None
     ) -> None:
         self.root_url = root_url
         self.api_key = api_key
@@ -26,7 +26,7 @@ class BaseGristClient:
         api_url = urljoin(self.root_url, "/api/")
         return urljoin(api_url, path)
 
-    def select_organization(self, org_info: Optional[str]) -> str:
+    def select_organization(self, org_info: Optional[int | str]) -> int | str:
         orgs = self.list_organization()
 
         if not orgs:
@@ -68,7 +68,7 @@ class BaseGristClient:
             )
         return orgs
 
-    def describe_organization(self, org_info: str) -> Organization:
+    def describe_organization(self, org_info: int | str) -> Organization:
         orgs = self.list_organization()
         for org in orgs:
             if org["id"] == org_info or org["name"] == org_info:
@@ -79,7 +79,7 @@ class BaseGristClient:
 
     def rename_organization(
         self,
-        org_id: str,
+        org_id: int | str,
         new_name: str,
     ) -> Organization:
         changes = {"name": new_name}

@@ -15,7 +15,7 @@ class User(UserRequired, total=False):
 
 
 class Organization(TypedDict):
-    id: str
+    id: int | str
     name: str
     domain: Optional[str]
     owner: User

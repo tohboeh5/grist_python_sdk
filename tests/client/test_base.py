@@ -29,10 +29,10 @@ def test_init_with_no_org_info(
     # Mock the orgs endpoint to include at least one organization
     orgs_response = [
         {
-            "id": "org_id",
+            "id": 1,
             "name": "Example Org",
             "domain": "example-domain",
-            "owner": {"id": 123, "name": "Owner Name"},
+            "owner": {"id": 1, "name": "Owner Name"},
             "access": "owners",
             "createdAt": "2019-09-13T15:42:35.000Z",
             "updatedAt": "2019-09-13T15:42:35.000Z",
@@ -42,13 +42,13 @@ def test_init_with_no_org_info(
 
     grist_client_with_no_org_info = BaseGristClient(root_url, api_key)
     # Mock the orgs endpoint to include at least one organization
-    orgs_response = [{"id": "org_id", "name": "Example Org"}]
+    orgs_response = [{"id": 1, "name": "Example Org"}]
     requests_mock.get(
         "https://example.com/api/orgs", json=orgs_response, status_code=200
     )
 
     # Test that the selected_org_id is set to the first organization in the list
-    assert grist_client_with_no_org_info.selected_org_id == "org_id"
+    assert grist_client_with_no_org_info.selected_org_id == 1
 
 
 @pytest.fixture
@@ -59,10 +59,10 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> BaseGristClient:
 
     orgs_response = [
         {
-            "id": "org_id",
+            "id": 1,
             "name": "Example Org",
             "domain": "example-domain",
-            "owner": {"id": 123, "name": "Owner Name"},
+            "owner": {"id": 1, "name": "Owner Name"},
             "access": "owners",
             "createdAt": "2019-09-13T15:42:35.000Z",
             "updatedAt": "2019-09-13T15:42:35.000Z",
@@ -77,14 +77,14 @@ def test_select_organization_with_valid_org_name(
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
     selected_org_id = grist_client_with_selected_org.select_organization("Example Org")
-    assert selected_org_id == "org_id"
+    assert selected_org_id == 1
 
 
 def test_select_organization_with_valid_org_id(
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
-    selected_org_id = grist_client_with_selected_org.select_organization("org_id")
-    assert selected_org_id == "org_id"
+    selected_org_id = grist_client_with_selected_org.select_organization(1)
+    assert selected_org_id == 1
 
 
 def test_select_organization_with_invalid_org_info(
@@ -99,9 +99,9 @@ def test_select_organization_with_invalid_org_info(
 def test_describe_organization(
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
-    org_details = grist_client_with_selected_org.describe_organization("org_id")
+    org_details = grist_client_with_selected_org.describe_organization(1)
     assert org_details is not None
-    assert org_details["id"] == "org_id"
+    assert org_details["id"] == 1
 
 
 def test_describe_organization_with_invalid_org_info(
@@ -140,7 +140,7 @@ def test_list_orgs_endpoint(
             "id": 1,
             "name": "Example Org",
             "domain": "example-domain",
-            "owner": {"id": 123, "name": "Owner Name"},
+            "owner": {"id": 1, "name": "Owner Name"},
             "access": "owners",
             "createdAt": "2019-09-13T15:42:35.000Z",
             "updatedAt": "2019-09-13T15:42:35.000Z",
@@ -169,14 +169,14 @@ def test_rename_organization_endpoint(
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
     # Mocking the request function to simulate a successful modification
-    org_id = "12345"
+    org_id = 1
     new_name = "New Org Name"
     expected_url = f"https://example.com/api/orgs/{org_id}"
     expected_response: Dict[str, Any] = {
-        "id": 12345,
+        "id": 1,
         "name": new_name,
         "domain": "example-domain",
-        "owner": {"id": 123, "name": "Owner Name"},
+        "owner": {"id": 1, "name": "Owner Name"},
         "access": "owners",
         "createdAt": "2019-09-13T15:42:35.000Z",
         "updatedAt": "2024-02-04T12:30:00.000Z",
