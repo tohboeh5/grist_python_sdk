@@ -1,6 +1,8 @@
-from typing import Any, Dict, Literal, Optional
+from datetime import datetime
+from typing import Any, Dict, List, Literal, Optional
 from urllib.parse import urljoin
 
+from grist_python_sdk.typing.orgs import Organization
 from requests import request
 
 
@@ -20,6 +22,29 @@ class BaseGristClient:
     def get_url(self, path: str) -> str:
         api_url = urljoin(self.root_url, "/api/")
         return urljoin(api_url, path)
+
+    def get_orgs(self) -> List[Organization]:
+        orgs_parsed: List[Dict[str, Any]] = self.request(
+            method="get", path="orgs", params={}
+        )
+        orgs: List[Organization] = []
+        for org_parsed in orgs_parsed:
+            orgs.append(
+                {
+                    "id": org_parsed["id"],
+                    "name": org_parsed["name"],
+                    "domain": org_parsed["domain"],
+                    "owner": org_parsed["owner"],
+                    "access": org_parsed["access"],
+                    "createdAt": datetime.strptime(
+                        org_parsed["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ),
+                    "updatedAt": datetime.strptime(
+                        org_parsed["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ),
+                }
+            )
+        return orgs
 
     def request(
         self,

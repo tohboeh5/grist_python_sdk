@@ -1,7 +1,9 @@
-from typing import Any
+from datetime import datetime
+from typing import Any, Dict, List
 
 import pytest
 from grist_python_sdk.client.base import BaseGristClient
+from grist_python_sdk.typing.orgs import Organization
 from requests_mock import Mocker
 
 
@@ -28,6 +30,37 @@ def test_base_grist_client_request_with_incorrect_api_key(
     # Test the request method with an incorrect API key
     with pytest.raises(Exception, match="Unauthorized"):
         grist_client.request("get", "path")
+
+
+def test_list_orgs_endpoint(
+    requests_mock: Mocker, grist_client: BaseGristClient
+) -> None:
+    expected_url = "https://example.com/api/orgs"
+    expected_response: List[Dict[str, Any]] = [
+        {
+            "id": 1,
+            "name": "Example Org",
+            "domain": "example-domain",
+            "owner": {"id": 123, "name": "Owner Name"},
+            "access": "owners",
+            "createdAt": "2019-09-13T15:42:35.000Z",
+            "updatedAt": "2019-09-13T15:42:35.000Z",
+        },
+    ]
+    requests_mock.get(expected_url, json=expected_response, status_code=200)
+
+    orgs_response: List[Organization] = grist_client.get_orgs()
+
+    assert orgs_response[0]["id"] == expected_response[0]["id"]
+    assert orgs_response[0]["name"] == expected_response[0]["name"]
+    assert orgs_response[0]["domain"] == expected_response[0]["domain"]
+    assert orgs_response[0]["access"] == expected_response[0]["access"]
+    assert orgs_response[0]["createdAt"] == datetime.strptime(
+        expected_response[0]["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
+    assert orgs_response[0]["updatedAt"] == datetime.strptime(
+        expected_response[0]["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
 
 
 def test_base_grist_client_request(
