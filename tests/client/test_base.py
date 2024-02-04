@@ -162,7 +162,7 @@ def test_list_orgs_endpoint(
     )
 
 
-def test_modify_org_name_endpoint(
+def test_rename_organization_endpoint(
     requests_mock: Mocker,
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
@@ -181,8 +181,8 @@ def test_modify_org_name_endpoint(
     }
     requests_mock.patch(expected_url, json=expected_response, status_code=200)
 
-    # Test the modify_org_name method
-    modified_org: Organization = grist_client_with_selected_org.modify_org_name(
+    # Test the rename_organization method
+    modified_org: Organization = grist_client_with_selected_org.rename_organization(
         org_id=org_id, new_name=new_name
     )
 

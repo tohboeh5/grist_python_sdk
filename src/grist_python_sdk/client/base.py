@@ -77,7 +77,7 @@ class BaseGristClient:
         # If the organization is not found, you can raise an exception or handle as needed
         raise ValueError(f"Organization with ID or name '{org_info}' not found")
 
-    def modify_org_name(
+    def rename_organization(
         self,
         org_id: str,
         new_name: str,
