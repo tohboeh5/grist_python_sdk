@@ -8,11 +8,17 @@ from requests import request
 
 class BaseGristClient:
     def __init__(
-        self, root_url: str, api_key: str, org_info: Optional[int | str] = None
+        self,
+        root_url: str,
+        api_key: str,
+        org_info: Optional[int | str] = None,
+        org_info_key: Optional[Literal["id", "name"]] = None,
     ) -> None:
         self.root_url = root_url
         self.api_key = api_key
-        self.selected_org_id = self.get_organization_id(org_info)
+        self.selected_org_id = self.get_organization_id(
+            org_info=org_info, org_info_key=org_info_key
+        )
 
     @property
     def headers_with_auth(self) -> Dict[str, str]:
@@ -26,20 +32,21 @@ class BaseGristClient:
         api_url = urljoin(self.root_url, "/api/")
         return urljoin(api_url, path)
 
-    def get_organization_id(self, org_info: Optional[int | str]) -> int | str:
+    def get_organization_id(
+        self,
+        org_info: Optional[int | str],
+        org_info_key: Optional[Literal["id", "name"]] = None,
+    ) -> int | str:
         orgs = self.list_organization()
 
         if not orgs:
             raise ValueError("No organizations available.")
 
         if org_info is not None:
-            # If org_info is provided, confirm it is in the available organizations
-            for org in orgs:
-                if org["id"] == org_info or org["name"] == org_info:
-                    return org["id"]
-
-            # If the organization is not found, raise an error
-            raise ValueError(f"Organization with ID or name '{org_info}' not found")
+            org = self.describe_organization(
+                org_info=org_info, org_info_key=org_info_key
+            )
+            return org["id"]
         else:
             # If org_info is not provided, let the client select one organization (you can implement your logic here)
             # For now, just select the first organization
@@ -68,10 +75,20 @@ class BaseGristClient:
             )
         return orgs
 
-    def describe_organization(self, org_info: int | str) -> Organization:
+    def describe_organization(
+        self,
+        org_info: int | str,
+        org_info_key: Optional[Literal["id", "name"]] = None,
+    ) -> Organization:
         orgs = self.list_organization()
+        org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
+
+        # If org_info is provided, confirm it is in the available organizations
         for org in orgs:
-            if org["id"] == org_info or org["name"] == org_info:
+            if (
+                sum([org[org_info_key_] == org_info for org_info_key_ in org_info_keys])
+                > 0
+            ):
                 return org
 
         # If the organization is not found, you can raise an exception or handle as needed
