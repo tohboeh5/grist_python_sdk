@@ -17,9 +17,7 @@ class GristOrganizationClient(GristBaseClient):
     ) -> None:
         self.root_url = root_url
         self.api_key = api_key
-        self.selected_org_id = self.get_organization_id(
-            org_info=org_info, org_info_key=org_info_key
-        )
+        self.select_organization(org_info=org_info, org_info_key=org_info_key)
 
     @staticmethod
     def parse_organization_info(org_dict: Dict[str, Any]) -> OrganizationInfo:
@@ -37,25 +35,40 @@ class GristOrganizationClient(GristBaseClient):
             ),
         }
 
-    def get_organization_id(
+    def select_organization(
         self,
         org_info: Optional[int | str],
         org_info_key: Optional[Literal["id", "name"]] = None,
-    ) -> int | str:
+    ) -> None:
         orgs = self.list_organizations()
 
         if not orgs:
             raise ValueError("No organizations available.")
 
         if org_info is not None:
-            org = self.describe_organization(
-                org_info=org_info, org_info_key=org_info_key
-            )
-            return org["id"]
+            org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
+
+            # If org_info is provided, confirm it is in the available organizations
+            for org in orgs:
+                if (
+                    sum(
+                        [
+                            org[org_info_key_] == org_info
+                            for org_info_key_ in org_info_keys
+                        ]
+                    )
+                    > 0
+                ):
+                    self.selected_org_id = org["id"]
+                    return
+
+            # If the organization is not found, you can raise an exception or handle as needed
+            raise ValueError(f"Organization with ID or name '{org_info}' not found")
+
         else:
             # If org_info is not provided, let the client select one organization (you can implement your logic here)
             # For now, just select the first organization
-            return orgs[0]["id"]
+            self.selected_org_id = orgs[0]["id"]
 
     def list_organizations(self) -> List[OrganizationInfo]:
         orgs_parsed: List[Dict[str, Any]] = self.request(

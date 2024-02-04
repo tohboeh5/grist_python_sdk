@@ -73,27 +73,27 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationCl
     return GristOrganizationClient(root_url, api_key, org_info)
 
 
-def test_get_organization_id_with_valid_org_name(
+def test_select_organization_with_valid_org_name(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
-    selected_org_id = grist_client_with_selected_org.get_organization_id("Example Org")
-    assert selected_org_id == 1
+    grist_client_with_selected_org.select_organization("Example Org")
+    assert grist_client_with_selected_org.selected_org_id == 1
 
 
-def test_get_organization_id_with_valid_org_id(
+def test_select_organization_with_valid_org_id(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
-    selected_org_id = grist_client_with_selected_org.get_organization_id(1)
-    assert selected_org_id == 1
+    grist_client_with_selected_org.select_organization(1)
+    assert grist_client_with_selected_org.selected_org_id == 1
 
 
-def test_get_organization_id_with_invalid_org_info(
+def test_select_organization_with_invalid_org_info(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     with pytest.raises(
         ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
     ):
-        grist_client_with_selected_org.get_organization_id("Nonexistent Org")
+        grist_client_with_selected_org.select_organization("Nonexistent Org")
 
 
 def test_describe_organization(
