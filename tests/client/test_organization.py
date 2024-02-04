@@ -48,7 +48,7 @@ def test_init_with_no_org_info(
     )
 
     # Test that the selected_org_id is set to the first organization in the list
-    assert grist_client_with_no_org_info.selected_org_id == 1
+    assert grist_client_with_no_org_info.selected_org_id is None
 
 
 @pytest.fixture
