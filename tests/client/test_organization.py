@@ -84,6 +84,22 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationCl
         f"{root_url}/api/orgs/1", json=orgs_response_describe, status_code=200
     )
 
+    expected_url_list_users = "https://example.com/api/orgs/1/access"
+    expected_response_list_users: Dict[str, Any] = {
+        "users": [
+            {
+                "id": 1,
+                "email": "you@example.com",
+                "name": "you@example.com",
+                "access": "owners",
+                "isMember": True,
+            }
+        ]
+    }
+    requests_mock.get(
+        expected_url_list_users, json=expected_response_list_users, status_code=200
+    )
+
     return GristOrganizationClient(root_url, api_key, org_info)
 
 
@@ -227,3 +243,13 @@ def test_rename_organization_without_selecting_org(
     # Test that ValueError is raised when rename_organization is called without selecting an org first
     with pytest.raises(ValueError, match="Select org first."):
         grist_client_with_selected_org.rename_organization(new_name="New Org Name")
+
+
+def test_list_users_for_organization(
+    requests_mock: Mocker,
+    grist_client_with_selected_org: GristOrganizationClient,
+) -> None:
+    # Mocking the request function to simulate a successful modification
+    users = grist_client_with_selected_org.list_users_for_organization()
+    assert users[0]["id"] == 1
+    assert users[0]["name"] == "you@example.com"

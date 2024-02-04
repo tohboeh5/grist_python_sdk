@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
 from grist_python_sdk.client.base import GristBaseClient
-from grist_python_sdk.typing.orgs import OrganizationInfo
+from grist_python_sdk.typing.orgs import OrganizationInfo, UserInfo
 
 
 class GristOrganizationClient(GristBaseClient):
@@ -96,3 +96,12 @@ class GristOrganizationClient(GristBaseClient):
             json=changes,
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
+
+    def list_users_for_organization(self) -> List[UserInfo]:
+        if self.selected_org_id is None:
+            raise ValueError("Select org first.")
+        users: List[UserInfo] = self.request(
+            method="get",
+            path=f"orgs/{self.selected_org_id}/access",
+        )["users"]
+        return users
