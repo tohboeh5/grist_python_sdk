@@ -74,10 +74,7 @@ class GristOrganizationClient(GristBaseClient):
             orgs.append(GristOrganizationClient.parse_organization_info(org_parsed))
         return orgs
 
-    def describe_organization(
-        self,
-        org_info_key: Optional[Literal["id", "name"]] = None,
-    ) -> OrganizationInfo:
+    def describe_organization(self) -> OrganizationInfo:
         org_parsed: Dict[str, Any] = self.request(
             method="get",
             path=f"orgs/{self.selected_org_id}",
