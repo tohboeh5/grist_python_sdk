@@ -14,7 +14,7 @@ class GristWorkspaceClient(GristOrganizationClient):
         api_key: str,
         org_info: Optional[int | str] = None,
         org_info_key: Optional[Literal["id", "name"]] = None,
-        ws_info: Optional[int] = None,
+        ws_info: Optional[int | str] = None,
         ws_info_key: Optional[Literal["id", "name"]] = None,
     ) -> None:
         self.root_url = root_url
@@ -36,7 +36,7 @@ class GristWorkspaceClient(GristOrganizationClient):
 
     def select_workspace(
         self,
-        ws_info: Optional[int],
+        ws_info: Optional[int | str],
         ws_info_key: Optional[Literal["id", "name"]] = None,
     ) -> None:
         orgs = self.list_workspaces()
@@ -62,7 +62,7 @@ class GristWorkspaceClient(GristOrganizationClient):
     def list_workspaces(self, all_organization: bool = False) -> List[WorkspaceInfo]:
         wss: List[WorkspaceInfo] = []
         if not all_organization:
-            if self.selected_ws_id is None:
+            if self.selected_org_id is None:
                 raise ValueError("Select organization first.")
             wss_parsed: List[Dict[str, Any]] = self.request(
                 method="get", path=f"orgs/{self.selected_org_id}/workspaces", params={}
