@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 import pytest
-from grist_python_sdk.client.base import BaseGristClient
+from grist_python_sdk.client.organazation import GristOrganizationClient
 from grist_python_sdk.typing.orgs import OrganizationInfo
 from requests_mock import Mocker
 
@@ -17,7 +17,7 @@ def test_init_with_no_organizations(
     requests_mock.get(f"{root_url}/api/orgs", json=[], status_code=200)
     # Test that ValueError is raised when there are no organizations available
     with pytest.raises(ValueError, match="No organizations available."):
-        BaseGristClient(root_url, api_key)
+        GristOrganizationClient(root_url, api_key)
 
 
 def test_init_with_no_org_info(
@@ -40,7 +40,7 @@ def test_init_with_no_org_info(
     ]
     requests_mock.get(f"{root_url}/api/orgs", json=orgs_response, status_code=200)
 
-    grist_client_with_no_org_info = BaseGristClient(root_url, api_key)
+    grist_client_with_no_org_info = GristOrganizationClient(root_url, api_key)
     # Mock the orgs endpoint to include at least one organization
     orgs_response = [{"id": 1, "name": "Example Org"}]
     requests_mock.get(
@@ -52,7 +52,7 @@ def test_init_with_no_org_info(
 
 
 @pytest.fixture
-def grist_client_with_selected_org(requests_mock: Mocker) -> BaseGristClient:
+def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationClient:
     root_url = "https://example.com"
     api_key = "your_api_key"
     org_info = "Example Org"
@@ -70,25 +70,25 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> BaseGristClient:
     ]
     requests_mock.get(f"{root_url}/api/orgs", json=orgs_response, status_code=200)
 
-    return BaseGristClient(root_url, api_key, org_info)
+    return GristOrganizationClient(root_url, api_key, org_info)
 
 
 def test_get_organization_id_with_valid_org_name(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     selected_org_id = grist_client_with_selected_org.get_organization_id("Example Org")
     assert selected_org_id == 1
 
 
 def test_get_organization_id_with_valid_org_id(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     selected_org_id = grist_client_with_selected_org.get_organization_id(1)
     assert selected_org_id == 1
 
 
 def test_get_organization_id_with_invalid_org_info(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     with pytest.raises(
         ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
@@ -97,7 +97,7 @@ def test_get_organization_id_with_invalid_org_info(
 
 
 def test_describe_organization(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     org_details = grist_client_with_selected_org.describe_organization(1)
     assert org_details is not None
@@ -105,7 +105,7 @@ def test_describe_organization(
 
 
 def test_describe_organization_with_invalid_org_info(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     with pytest.raises(
         ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
@@ -115,7 +115,7 @@ def test_describe_organization_with_invalid_org_info(
 
 def test_base_grist_client_request_with_incorrect_api_key(
     requests_mock: Mocker,
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     # Mocking the request function to simulate an incorrect API key error
     requests_mock.request(
@@ -132,7 +132,7 @@ def test_base_grist_client_request_with_incorrect_api_key(
 
 
 def test_list_orgs_endpoint(
-    requests_mock: Mocker, grist_client_with_selected_org: BaseGristClient
+    requests_mock: Mocker, grist_client_with_selected_org: GristOrganizationClient
 ) -> None:
     expected_url = "https://example.com/api/orgs"
     expected_response: List[Dict[str, Any]] = [
@@ -166,7 +166,7 @@ def test_list_orgs_endpoint(
 
 def test_rename_organization_endpoint(
     requests_mock: Mocker,
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     # Mocking the request function to simulate a successful modification
     org_id = 1
@@ -184,7 +184,7 @@ def test_rename_organization_endpoint(
     requests_mock.patch(expected_url, json=expected_response, status_code=200)
 
     # Test the rename_organization method
-    modified_org: Organization = grist_client_with_selected_org.rename_organization(
+    modified_org: OrganizationInfo = grist_client_with_selected_org.rename_organization(
         org_id=org_id, new_name=new_name
     )
 
@@ -202,7 +202,7 @@ def test_rename_organization_endpoint(
 
 def test_base_grist_client_request(
     requests_mock: Mocker,
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     # Mocking the request function
     input_params = {"param": "value"}
@@ -226,7 +226,7 @@ def test_base_grist_client_request(
 
 
 def test_base_grist_client_headers_with_auth(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     expected_headers = {
         "Content-Type": "application/json",
@@ -238,7 +238,7 @@ def test_base_grist_client_headers_with_auth(
 
 
 def test_base_grist_client_get_url(
-    grist_client_with_selected_org: BaseGristClient,
+    grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     path = "path"
     expected_url = "https://example.com/api/path"
