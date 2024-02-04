@@ -96,21 +96,21 @@ def test_select_organization_with_invalid_org_info(
         grist_client_with_selected_org.select_organization("Nonexistent Org")
 
 
-def test_get_organization_details(
+def test_describe_organization(
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
-    org_details = grist_client_with_selected_org.get_organization_details("org_id")
+    org_details = grist_client_with_selected_org.describe_organization("org_id")
     assert org_details is not None
     assert org_details["id"] == "org_id"
 
 
-def test_get_organization_details_with_invalid_org_info(
+def test_describe_organization_with_invalid_org_info(
     grist_client_with_selected_org: BaseGristClient,
 ) -> None:
     with pytest.raises(
         ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
     ):
-        grist_client_with_selected_org.get_organization_details("Nonexistent Org")
+        grist_client_with_selected_org.describe_organization("Nonexistent Org")
 
 
 def test_base_grist_client_request_with_incorrect_api_key(

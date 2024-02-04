@@ -68,7 +68,7 @@ class BaseGristClient:
             )
         return orgs
 
-    def get_organization_details(self, org_info: str) -> Organization:
+    def describe_organization(self, org_info: str) -> Organization:
         orgs = self.get_orgs()
         for org in orgs:
             if org["id"] == org_info or org["name"] == org_info:
