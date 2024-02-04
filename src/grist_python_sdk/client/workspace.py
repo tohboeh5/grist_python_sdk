@@ -20,7 +20,8 @@ class GristWorkspaceClient(GristOrganizationClient):
         self.root_url = root_url
         self.api_key = api_key
         self.select_organization(org_info=org_info, org_info_key=org_info_key)
-        self.select_workspace(ws_info=ws_info, ws_info_key=ws_info_key)
+        if self.selected_org_id is not None:
+            self.select_workspace(ws_info=ws_info, ws_info_key=ws_info_key)
 
     @staticmethod
     def parse_workspace_info(ws_dict: Dict[str, Any]) -> WorkspaceInfo:
