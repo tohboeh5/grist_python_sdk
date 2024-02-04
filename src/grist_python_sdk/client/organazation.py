@@ -21,6 +21,22 @@ class GristOrganizationClient(GristBaseClient):
             org_info=org_info, org_info_key=org_info_key
         )
 
+    @staticmethod
+    def parse_organization_info(org_dict: Dict[str, Any]) -> OrganizationInfo:
+        return {
+            "id": org_dict["id"],
+            "name": str(org_dict["name"]),
+            "domain": org_dict["domain"],
+            "owner": org_dict["owner"],
+            "access": org_dict["access"],
+            "createdAt": datetime.strptime(
+                org_dict["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            "updatedAt": datetime.strptime(
+                org_dict["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+        }
+
     def get_organization_id(
         self,
         org_info: Optional[int | str],
@@ -47,21 +63,7 @@ class GristOrganizationClient(GristBaseClient):
         )
         orgs: List[OrganizationInfo] = []
         for org_parsed in orgs_parsed:
-            orgs.append(
-                {
-                    "id": org_parsed["id"],
-                    "name": org_parsed["name"],
-                    "domain": org_parsed["domain"],
-                    "owner": org_parsed["owner"],
-                    "access": org_parsed["access"],
-                    "createdAt": datetime.strptime(
-                        org_parsed["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
-                    ),
-                    "updatedAt": datetime.strptime(
-                        org_parsed["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
-                    ),
-                }
-            )
+            orgs.append(GristOrganizationClient.parse_organization_info(org_parsed))
         return orgs
 
     def describe_organization(
@@ -94,16 +96,4 @@ class GristOrganizationClient(GristBaseClient):
             path=f"orgs/{org_id}",
             json=changes,
         )
-        return {
-            "id": org_parsed["id"],
-            "name": org_parsed["name"],
-            "domain": org_parsed["domain"],
-            "owner": org_parsed["owner"],
-            "access": org_parsed["access"],
-            "createdAt": datetime.strptime(
-                org_parsed["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
-            "updatedAt": datetime.strptime(
-                org_parsed["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
-        }
+        return GristOrganizationClient.parse_organization_info(org_parsed)
