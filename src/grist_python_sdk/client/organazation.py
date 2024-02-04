@@ -6,7 +6,7 @@ from grist_python_sdk.typing.orgs import OrganizationInfo
 
 
 class GristOrganizationClient(GristBaseClient):
-    selected_org_id: int | str
+    selected_org_id: Optional[int | str] = None
 
     def __init__(
         self,
@@ -64,11 +64,6 @@ class GristOrganizationClient(GristBaseClient):
 
             # If the organization is not found, you can raise an exception or handle as needed
             raise ValueError(f"Organization with ID or name '{org_info}' not found")
-
-        else:
-            # If org_info is not provided, let the client select one organization (you can implement your logic here)
-            # For now, just select the first organization
-            self.selected_org_id = orgs[0]["id"]
 
     def list_organizations(self) -> List[OrganizationInfo]:
         orgs_parsed: List[Dict[str, Any]] = self.request(
