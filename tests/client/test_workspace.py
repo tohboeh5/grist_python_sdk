@@ -1,139 +1,139 @@
 from typing import Any, Dict, List
 
 import pytest
-from grist_python_sdk.client.organazation import GristOrganizationClient
 from grist_python_sdk.client.workspace import GristWorkspaceClient
 from grist_python_sdk.typing.workspaces import WorkspaceInfo
 from requests_mock import Mocker
+from utils import mock_org_dict, mock_root_url, mock_user_dict, mock_ws_dict
 
 
 @pytest.fixture
 def grist_workspace_client_with_selected_ws(
     requests_mock: Mocker,
 ) -> GristWorkspaceClient:
-    root_url = "https://example.com"
     api_key = "your_api_key"
-    org_info = "Example Org"
-
-    orgs_response_list = [
-        {
-            "id": 1,
-            "name": "Example Org",
-            "domain": "example-domain",
-            "owner": {"id": 1, "name": "Owner Name"},
-            "access": "owners",
-            "createdAt": "2019-09-13T15:42:35.000Z",
-            "updatedAt": "2019-09-13T15:42:35.000Z",
-        },
-    ]
-    requests_mock.get(f"{root_url}/api/orgs", json=orgs_response_list, status_code=200)
-
-    orgs_response_describe: Dict[str, Any] = {
-        "id": 1,
-        "name": "Example Org",
-        "domain": "example-domain",
-        "owner": {"id": 1, "name": "Owner Name"},
-        "access": "owners",
-        "createdAt": "2019-09-13T15:42:35.000Z",
-        "updatedAt": "2019-09-13T15:42:35.000Z",
-    }
     requests_mock.get(
-        f"{root_url}/api/orgs/1", json=orgs_response_describe, status_code=200
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
     )
-
-    expected_url_list_users = "https://example.com/api/orgs/1/access"
-    expected_response_list_users: Dict[str, Any] = {
-        "users": [
-            {
-                "id": 1,
-                "email": "you@example.com",
-                "name": "you@example.com",
-                "access": "owners",
-                "isMember": True,
-            }
-        ]
-    }
     requests_mock.get(
-        expected_url_list_users, json=expected_response_list_users, status_code=200
+        f"{mock_root_url}/api/orgs/1", json=mock_org_dict, status_code=200
     )
-
-    expected_response_ws_list = [
-        {
-            "id": 1,
-            "name": "Workspace 1",
-            "access": "owners",
-            "owner": {"id": 1, "name": "Owner Name"},
-            "docs": [
-                {"id": "doc1", "name": "doc1", "access": "owners", "isPinned": True}
-            ],
-        },
-        {
-            "id": 2,
-            "name": "Workspace 2",
-            "access": "owners",
-            "owner": {"id": 1, "name": "Owner Name"},
-            "docs": [
-                {"id": "doc2", "name": "doc2", "access": "owners", "isPinned": True}
-            ],
-        },
-    ]
     requests_mock.get(
-        f"{root_url}/api/orgs/1/workspaces",
-        json=expected_response_ws_list,
+        f"{mock_root_url}/api/orgs/1/access",
+        json={"users": [mock_user_dict]},
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/workspaces",
+        json=[mock_ws_dict],
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/workspaces/1",
+        json=mock_ws_dict,
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/workspaces/1/access",
+        json={"users": [mock_user_dict]},
         status_code=200,
     )
 
     return GristWorkspaceClient(
-        root_url, api_key, org_info=org_info, ws_info="Workspace 1"
+        mock_root_url,
+        api_key,
+        org_info=str(mock_org_dict["name"]),
+        ws_info="Workspace 1",
+    )
+
+
+@pytest.fixture
+def grist_workspace_client_without_selected_ws(
+    requests_mock: Mocker,
+) -> GristWorkspaceClient:
+    api_key = "your_api_key"
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1", json=mock_org_dict, status_code=200
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/access",
+        json={"users": [mock_user_dict]},
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/workspaces",
+        json=[mock_ws_dict],
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/workspaces/1",
+        json=mock_ws_dict,
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/workspaces/1/access",
+        json={"users": [mock_user_dict]},
+        status_code=200,
+    )
+
+    return GristWorkspaceClient(
+        mock_root_url,
+        api_key,
+        org_info=str(mock_org_dict["name"]),
     )
 
 
 def test_init_with_no_workspaces(
     requests_mock: Mocker,
 ) -> None:
-    root_url = "https://example.com"
     api_key = "your_api_key"
-    org_info = "Example Org"
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+    )
 
     # Mock the workspaces endpoint to return an empty list
     requests_mock.get(
-        f"{root_url}/api/orgs/1/workspaces",
+        f"{mock_root_url}/api/orgs/1/workspaces",
         json=[],
         status_code=200,
     )
 
     # Test that ValueError is raised when there are no workspaces available
     with pytest.raises(ValueError, match="No Workspaces available."):
-        GristWorkspaceClient(root_url, api_key, org_info)
+        GristWorkspaceClient(mock_root_url, api_key, org_info=1)
+
+
+def test_init_with_no_org_info(
+    requests_mock: Mocker,
+) -> None:
+    root_url = "https://example.com"
+    api_key = "your_api_key"
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+    )
+
+    # Mock the workspaces endpoint to include at least one workspace
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/workspaces",
+        json=[mock_ws_dict],
+        status_code=200,
+    )
+
+    grist_client_with_no_ws_info = GristWorkspaceClient(root_url, api_key)
+    # Test that the selected_ws_id is set to the first workspace in the list
+    assert grist_client_with_no_ws_info.selected_org_id is None
+    assert grist_client_with_no_ws_info.selected_ws_id is None
 
 
 def test_init_with_no_ws_info(
     requests_mock: Mocker,
-    grist_workspace_client_with_selected_ws: GristOrganizationClient,
+    grist_workspace_client_without_selected_ws: GristWorkspaceClient,
 ) -> None:
-    root_url = "https://example.com"
-    api_key = "your_api_key"
-    org_info = "Example Org"
-
-    # Mock the workspaces endpoint to include at least one workspace
-    ws_response = [
-        {
-            "id": 1,
-            "name": "Example Workspace",
-            "docs": [],
-        },
-    ]
-    requests_mock.get(
-        f"{root_url}/api/orgs/{grist_workspace_client_with_selected_ws.selected_org_id}/workspaces",
-        json=ws_response,
-        status_code=200,
-    )
-
-    grist_client_with_no_ws_info = GristWorkspaceClient(
-        root_url, api_key, org_info=org_info
-    )
     # Test that the selected_ws_id is set to the first workspace in the list
-    assert grist_client_with_no_ws_info.selected_ws_id == 1
+    assert grist_workspace_client_without_selected_ws.selected_ws_id is None
 
 
 def test_select_workspace_with_valid_ws_name(
@@ -169,9 +169,9 @@ def test_list_workspaces_endpoint(
         WorkspaceInfo
     ] = grist_workspace_client_with_selected_ws.list_workspaces()
 
-    assert ws_response[0]["id"] == 1
-    assert ws_response[0]["name"] == "Example Workspace"
-    assert ws_response[0]["docs"] == []
+    assert ws_response[0]["id"] == mock_ws_dict["id"]
+    assert ws_response[0]["name"] == mock_ws_dict["name"]
+    assert ws_response[0]["docs"] == mock_ws_dict["docs"]
 
 
 def test_describe_workspace(
@@ -240,8 +240,8 @@ def test_list_users_of_workspace(
 ) -> None:
     # Mocking the request function to simulate a successful modification
     users = grist_workspace_client_with_selected_ws.list_users_of_workspace()
-    assert users[0]["id"] == 1
-    assert users[0]["name"] == "you@example.com"
+    assert users[0]["id"] == mock_user_dict["id"]
+    assert users[0]["name"] == mock_user_dict["name"]
 
 
 def test_list_users_of_workspace_without_selecting_ws(

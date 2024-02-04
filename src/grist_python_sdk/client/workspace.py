@@ -30,7 +30,7 @@ class GristWorkspaceClient(GristOrganizationClient):
         for doc in ws_dict["docs"]:
             doc["id"] = str(doc["id"])
             doc["name"] = str(doc["name"])
-            doc["isPinned"] = str(doc["isPinned"])
+            doc["isPinned"] = bool(doc["isPinned"])
 
         return ws_dict  # type:ignore
 

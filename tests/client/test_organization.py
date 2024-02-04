@@ -1,51 +1,38 @@
+from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import List
 
 import pytest
 from grist_python_sdk.client.organazation import GristOrganizationClient
 from grist_python_sdk.typing.orgs import OrganizationInfo
 from requests_mock import Mocker
+from utils import mock_org_dict, mock_root_url, mock_user_dict
 
 
 def test_init_with_no_organizations(
     requests_mock: Mocker,
 ) -> None:
-    root_url = "https://example.com"
     api_key = "your_api_key"
 
     # Mock the orgs endpoint to return an empty list
-    requests_mock.get(f"{root_url}/api/orgs", json=[], status_code=200)
+    requests_mock.get(f"{mock_root_url}/api/orgs", json=[], status_code=200)
     # Test that ValueError is raised when there are no organizations available
     with pytest.raises(ValueError, match="No organizations available."):
-        GristOrganizationClient(root_url, api_key)
+        GristOrganizationClient(mock_root_url, api_key)
 
 
 def test_init_with_no_org_info(
     requests_mock: Mocker,
 ) -> None:
-    root_url = "https://example.com"
     api_key = "your_api_key"
 
     # Mock the orgs endpoint to include at least one organization
-    orgs_response = [
-        {
-            "id": 1,
-            "name": "Example Org",
-            "domain": "example-domain",
-            "owner": {"id": 1, "name": "Owner Name"},
-            "access": "owners",
-            "createdAt": "2019-09-13T15:42:35.000Z",
-            "updatedAt": "2019-09-13T15:42:35.000Z",
-        },
-    ]
-    requests_mock.get(f"{root_url}/api/orgs", json=orgs_response, status_code=200)
-
-    grist_client_with_no_org_info = GristOrganizationClient(root_url, api_key)
-    # Mock the orgs endpoint to include at least one organization
-    orgs_response = [{"id": 1, "name": "Example Org"}]
     requests_mock.get(
-        "https://example.com/api/orgs", json=orgs_response, status_code=200
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
     )
+
+    grist_client_with_no_org_info = GristOrganizationClient(mock_root_url, api_key)
+    # Mock the orgs endpoint to include at least one organization
 
     # Test that the selected_org_id is set to the first organization in the list
     assert grist_client_with_no_org_info.selected_org_id is None
@@ -53,54 +40,22 @@ def test_init_with_no_org_info(
 
 @pytest.fixture
 def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationClient:
-    root_url = "https://example.com"
     api_key = "your_api_key"
     org_info = "Example Org"
 
-    orgs_response_list = [
-        {
-            "id": 1,
-            "name": "Example Org",
-            "domain": "example-domain",
-            "owner": {"id": 1, "name": "Owner Name"},
-            "access": "owners",
-            "createdAt": "2019-09-13T15:42:35.000Z",
-            "updatedAt": "2019-09-13T15:42:35.000Z",
-        },
-    ]
-    requests_mock.get(f"{root_url}/api/orgs", json=orgs_response_list, status_code=200)
-
-    orgs_response_describe: Dict[str, Any] = {
-        "id": 1,
-        "name": "Example Org",
-        "domain": "example-domain",
-        "owner": {"id": 1, "name": "Owner Name"},
-        "access": "owners",
-        "createdAt": "2019-09-13T15:42:35.000Z",
-        "updatedAt": "2019-09-13T15:42:35.000Z",
-    }
-
     requests_mock.get(
-        f"{root_url}/api/orgs/1", json=orgs_response_describe, status_code=200
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1", json=mock_org_dict, status_code=200
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/access",
+        json={"users": [mock_user_dict]},
+        status_code=200,
     )
 
-    expected_url_list_users = "https://example.com/api/orgs/1/access"
-    expected_response_list_users: Dict[str, Any] = {
-        "users": [
-            {
-                "id": 1,
-                "email": "you@example.com",
-                "name": "you@example.com",
-                "access": "owners",
-                "isMember": True,
-            }
-        ]
-    }
-    requests_mock.get(
-        expected_url_list_users, json=expected_response_list_users, status_code=200
-    )
-
-    return GristOrganizationClient(root_url, api_key, org_info)
+    return GristOrganizationClient(mock_root_url, api_key, org_info)
 
 
 def test_select_organization_with_valid_org_name(
@@ -153,15 +108,16 @@ def test_list_orgs_endpoint(
         OrganizationInfo
     ] = grist_client_with_selected_org.list_organizations()
 
-    assert orgs_response[0]["id"] == 1
-    assert orgs_response[0]["name"] == "Example Org"
-    assert orgs_response[0]["domain"] == "example-domain"
-    assert orgs_response[0]["access"] == "owners"
+    assert orgs_response[0]["id"] == mock_org_dict["id"]
+    assert orgs_response[0]["name"] == mock_org_dict["name"]
+    assert orgs_response[0]["domain"] == mock_org_dict["domain"]
+    assert orgs_response[0]["access"] == mock_org_dict["access"]
     assert orgs_response[0]["createdAt"] == datetime.strptime(
-        "2019-09-13T15:42:35.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+        str(mock_org_dict["createdAt"]),
+        "%Y-%m-%dT%H:%M:%S.%fZ",
     )
     assert orgs_response[0]["updatedAt"] == datetime.strptime(
-        "2019-09-13T15:42:35.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"
+        str(mock_org_dict["updatedAt"]), "%Y-%m-%dT%H:%M:%S.%fZ"
     )
 
 
@@ -170,34 +126,30 @@ def test_rename_organization_endpoint(
     grist_client_with_selected_org: GristOrganizationClient,
 ) -> None:
     # Mocking the request function to simulate a successful modification
-    org_id = 1
     new_name = "New Org Name"
-    expected_url = f"https://example.com/api/orgs/{org_id}"
-    expected_response: Dict[str, Any] = {
-        "id": 1,
-        "name": new_name,
-        "domain": "example-domain",
-        "owner": {"id": 1, "name": "Owner Name"},
-        "access": "owners",
-        "createdAt": "2019-09-13T15:42:35.000Z",
-        "updatedAt": "2024-02-04T12:30:00.000Z",
-    }
-    requests_mock.patch(expected_url, json=expected_response, status_code=200)
+
+    mock_org_dict_new = deepcopy(mock_org_dict)
+    mock_org_dict_new["name"] = new_name  # type:ignore
+    requests_mock.patch(
+        f"{mock_root_url}/api/orgs/{mock_org_dict['id']}",
+        json=mock_org_dict_new,
+        status_code=200,
+    )
 
     # Test the rename_organization method
     modified_org: OrganizationInfo = grist_client_with_selected_org.rename_organization(
         new_name=new_name
     )
 
-    assert modified_org["id"] == expected_response["id"]
-    assert modified_org["name"] == expected_response["name"]
-    assert modified_org["domain"] == expected_response["domain"]
-    assert modified_org["access"] == expected_response["access"]
+    assert modified_org["id"] == mock_org_dict["id"]
+    assert modified_org["name"] == new_name
+    assert modified_org["domain"] == mock_org_dict["domain"]
+    assert modified_org["access"] == mock_org_dict["access"]
     assert modified_org["createdAt"] == datetime.strptime(
-        expected_response["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        str(mock_org_dict["createdAt"]), "%Y-%m-%dT%H:%M:%S.%fZ"
     )
     assert modified_org["updatedAt"] == datetime.strptime(
-        expected_response["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        str(mock_org_dict["updatedAt"]), "%Y-%m-%dT%H:%M:%S.%fZ"
     )
 
 
@@ -219,8 +171,8 @@ def test_list_users_of_organization(
 ) -> None:
     # Mocking the request function to simulate a successful modification
     users = grist_client_with_selected_org.list_users_of_organization()
-    assert users[0]["id"] == 1
-    assert users[0]["name"] == "you@example.com"
+    assert users[0]["id"] == mock_user_dict["id"]
+    assert users[0]["name"] == mock_user_dict["name"]
 
 
 def test_list_users_of_organization_without_selecting_org(
