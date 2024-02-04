@@ -185,7 +185,7 @@ def test_rename_organization_endpoint(
 
     # Test the rename_organization method
     modified_org: OrganizationInfo = grist_client_with_selected_org.rename_organization(
-        org_id=org_id, new_name=new_name
+        new_name=new_name
     )
 
     assert modified_org["id"] == expected_response["id"]

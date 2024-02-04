@@ -87,13 +87,12 @@ class GristOrganizationClient(GristBaseClient):
 
     def rename_organization(
         self,
-        org_id: int | str,
         new_name: str,
     ) -> OrganizationInfo:
         changes = {"name": new_name}
         org_parsed: Dict[str, Any] = self.request(
             method="patch",
-            path=f"orgs/{org_id}",
+            path=f"orgs/{self.selected_org_id}",
             json=changes,
         )
         return GristOrganizationClient.parse_organization_info(org_parsed)
