@@ -149,33 +149,19 @@ def test_describe_organization_without_selecting_org(
 def test_list_orgs_endpoint(
     requests_mock: Mocker, grist_client_with_selected_org: GristOrganizationClient
 ) -> None:
-    expected_url = "https://example.com/api/orgs"
-    expected_response: List[Dict[str, Any]] = [
-        {
-            "id": 1,
-            "name": "Example Org",
-            "domain": "example-domain",
-            "owner": {"id": 1, "name": "Owner Name"},
-            "access": "owners",
-            "createdAt": "2019-09-13T15:42:35.000Z",
-            "updatedAt": "2019-09-13T15:42:35.000Z",
-        },
-    ]
-    requests_mock.get(expected_url, json=expected_response, status_code=200)
-
     orgs_response: List[
         OrganizationInfo
     ] = grist_client_with_selected_org.list_organizations()
 
-    assert orgs_response[0]["id"] == expected_response[0]["id"]
-    assert orgs_response[0]["name"] == expected_response[0]["name"]
-    assert orgs_response[0]["domain"] == expected_response[0]["domain"]
-    assert orgs_response[0]["access"] == expected_response[0]["access"]
+    assert orgs_response[0]["id"] == 1
+    assert orgs_response[0]["name"] == "Example Org"
+    assert orgs_response[0]["domain"] == "example-domain"
+    assert orgs_response[0]["access"] == "owners"
     assert orgs_response[0]["createdAt"] == datetime.strptime(
-        expected_response[0]["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        "2019-09-13T15:42:35.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"
     )
     assert orgs_response[0]["updatedAt"] == datetime.strptime(
-        expected_response[0]["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        "2019-09-13T15:42:35.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"
     )
 
 
