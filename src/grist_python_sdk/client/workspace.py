@@ -55,18 +55,24 @@ class GristWorkspaceClient(GristOrganizationClient):
 
         if ws_info is not None:
             ws_info_keys = [ws_info_key] if ws_info_key else ["id", "name"]
-
+            selected_ws_ids: List[int] = []
             # If ws_info is provided, confirm it is in the available Workspaces
             for org in orgs:
                 if (
                     sum([org[ws_info_key_] == ws_info for ws_info_key_ in ws_info_keys])
                     > 0
                 ):
-                    self.selected_ws_id = org["id"]
-                    return
+                    selected_ws_ids.append(org["id"])
 
-            # If the Workspace is not found, you can raise an exception or handle as needed
-            raise ValueError(f"Workspace with ID or name '{ws_info}' not found")
+            if len(selected_ws_ids) == 1:
+                self.selected_ws_id = selected_ws_ids[0]
+            elif len(selected_ws_ids) == 0:
+                # If the organization is not found, you can raise an exception or handle as needed
+                raise ValueError(f"Workspace with ID or name '{ws_info}' not found")
+            else:
+                raise ValueError(
+                    f"Workspace with ID or name '{ws_info}' found 2 or more."
+                )
 
     def list_workspaces(self, all_organization: bool = False) -> List[WorkspaceInfo]:
         wss: List[WorkspaceInfo] = []

@@ -47,7 +47,7 @@ class GristOrganizationClient(GristBaseClient):
 
         if org_info is not None:
             org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
-
+            selected_org_ids: List[int | str] = []
             # If org_info is provided, confirm it is in the available organizations
             for org in orgs:
                 if (
@@ -59,11 +59,17 @@ class GristOrganizationClient(GristBaseClient):
                     )
                     > 0
                 ):
-                    self.selected_org_id = org["id"]
-                    return
+                    selected_org_ids.append(org["id"])
 
-            # If the organization is not found, you can raise an exception or handle as needed
-            raise ValueError(f"Organization with ID or name '{org_info}' not found")
+            if len(selected_org_ids) == 1:
+                self.selected_org_id = selected_org_ids[0]
+            elif len(selected_org_ids) == 0:
+                # If the organization is not found, you can raise an exception or handle as needed
+                raise ValueError(f"Organization with ID or name '{org_info}' not found")
+            else:
+                raise ValueError(
+                    f"Organizations with ID or name '{org_info}' found 2 or more."
+                )
 
     def list_organizations(self) -> List[OrganizationInfo]:
         orgs_parsed: List[Dict[str, Any]] = self.request(
