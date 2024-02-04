@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 from urllib.parse import urljoin
 
-from grist_python_sdk.typing.orgs import Organization
+from grist_python_sdk.typing.orgs import OrganizationInfo
 from requests import request
 
 
@@ -52,11 +52,11 @@ class BaseGristClient:
             # For now, just select the first organization
             return orgs[0]["id"]
 
-    def list_organizations(self) -> List[Organization]:
+    def list_organizations(self) -> List[OrganizationInfo]:
         orgs_parsed: List[Dict[str, Any]] = self.request(
             method="get", path="orgs", params={}
         )
-        orgs: List[Organization] = []
+        orgs: List[OrganizationInfo] = []
         for org_parsed in orgs_parsed:
             orgs.append(
                 {
@@ -79,7 +79,7 @@ class BaseGristClient:
         self,
         org_info: int | str,
         org_info_key: Optional[Literal["id", "name"]] = None,
-    ) -> Organization:
+    ) -> OrganizationInfo:
         orgs = self.list_organizations()
         org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
 
@@ -98,7 +98,7 @@ class BaseGristClient:
         self,
         org_id: int | str,
         new_name: str,
-    ) -> Organization:
+    ) -> OrganizationInfo:
         changes = {"name": new_name}
         org_parsed: Dict[str, Any] = self.request(
             method="patch",

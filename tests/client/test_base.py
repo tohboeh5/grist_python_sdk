@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import pytest
 from grist_python_sdk.client.base import BaseGristClient
-from grist_python_sdk.typing.orgs import Organization
+from grist_python_sdk.typing.orgs import OrganizationInfo
 from requests_mock import Mocker
 
 
@@ -149,7 +149,7 @@ def test_list_orgs_endpoint(
     requests_mock.get(expected_url, json=expected_response, status_code=200)
 
     orgs_response: List[
-        Organization
+        OrganizationInfo
     ] = grist_client_with_selected_org.list_organizations()
 
     assert orgs_response[0]["id"] == expected_response[0]["id"]

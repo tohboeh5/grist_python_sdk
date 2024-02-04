@@ -4,21 +4,21 @@ from typing import Literal, Optional, TypedDict
 Access = Literal["owners", "editors", "viewers"]
 
 
-class UserRequired(TypedDict):
+class UserInfoRequired(TypedDict):
     id: str
     name: str
 
 
-class User(UserRequired, total=False):
+class UserInfo(UserInfoRequired, total=False):
     email: Optional[str]
     access: Optional[Access]
 
 
-class Organization(TypedDict):
+class OrganizationInfo(TypedDict):
     id: int | str
     name: str
     domain: Optional[str]
-    owner: User
+    owner: UserInfo
     access: Access
     createdAt: datetime
     updatedAt: datetime
