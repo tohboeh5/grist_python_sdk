@@ -38,6 +38,16 @@ def grist_workspace_client_with_selected_ws(
         json={"users": [mock_user_dict]},
         status_code=200,
     )
+    requests_mock.post(
+        f"{mock_root_url}/api/orgs/1/workspaces",
+        text="2",
+        status_code=200,
+    )
+    requests_mock.delete(
+        f"{mock_root_url}/api/workspaces/1",
+        json={},
+        status_code=200,
+    )
 
     return GristWorkspaceClient(
         mock_root_url,
@@ -86,6 +96,44 @@ def grist_workspace_client_without_selected_ws(
     )
 
 
+@pytest.fixture
+def grist_workspace_client_without_selected_org(
+    requests_mock: Mocker,
+) -> GristWorkspaceClient:
+    api_key = "your_api_key"
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1", json=mock_org_dict, status_code=200
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/access",
+        json={"users": [mock_user_dict]},
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/orgs/1/workspaces",
+        json=[mock_ws_dict],
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/workspaces/1",
+        json=mock_ws_dict,
+        status_code=200,
+    )
+    requests_mock.get(
+        f"{mock_root_url}/api/workspaces/1/access",
+        json={"users": [mock_user_dict]},
+        status_code=200,
+    )
+
+    return GristWorkspaceClient(
+        mock_root_url,
+        api_key,
+    )
+
+
 def test_init_with_no_workspaces(
     requests_mock: Mocker,
 ) -> None:
@@ -108,24 +156,11 @@ def test_init_with_no_workspaces(
 
 def test_init_with_no_org_info(
     requests_mock: Mocker,
+    grist_workspace_client_without_selected_org: GristWorkspaceClient,
 ) -> None:
-    root_url = "https://example.com"
-    api_key = "your_api_key"
-    requests_mock.get(
-        f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
-    )
-
-    # Mock the workspaces endpoint to include at least one workspace
-    requests_mock.get(
-        f"{mock_root_url}/api/orgs/1/workspaces",
-        json=[mock_ws_dict],
-        status_code=200,
-    )
-
-    grist_client_with_no_ws_info = GristWorkspaceClient(root_url, api_key)
     # Test that the selected_ws_id is set to the first workspace in the list
-    assert grist_client_with_no_ws_info.selected_org_id is None
-    assert grist_client_with_no_ws_info.selected_ws_id is None
+    assert grist_workspace_client_without_selected_org.selected_org_id is None
+    assert grist_workspace_client_without_selected_org.selected_ws_id is None
 
 
 def test_init_with_no_ws_info(
@@ -168,6 +203,27 @@ def test_list_workspaces_endpoint(
     ws_response: List[
         WorkspaceInfo
     ] = grist_workspace_client_with_selected_ws.list_workspaces()
+
+    assert ws_response[0]["id"] == mock_ws_dict["id"]
+    assert ws_response[0]["name"] == mock_ws_dict["name"]
+    assert ws_response[0]["docs"] == mock_ws_dict["docs"]
+
+
+def test_list_workspaces_without_select_org(
+    requests_mock: Mocker,
+    grist_workspace_client_without_selected_org: GristWorkspaceClient,
+) -> None:
+    with pytest.raises(ValueError, match="Select organization first."):
+        grist_workspace_client_without_selected_org.list_workspaces()
+
+
+def test_list_for_all_organization_workspaces_endpoint(
+    requests_mock: Mocker,
+    grist_workspace_client_with_selected_ws: GristWorkspaceClient,
+) -> None:
+    ws_response: List[
+        WorkspaceInfo
+    ] = grist_workspace_client_with_selected_ws.list_workspaces(True)
 
     assert ws_response[0]["id"] == mock_ws_dict["id"]
     assert ws_response[0]["name"] == mock_ws_dict["name"]
@@ -254,3 +310,17 @@ def test_list_users_of_workspace_without_selecting_ws(
     # Test that ValueError is raised when list_users_of_workspace is called without selecting a workspace first
     with pytest.raises(ValueError, match="Select workspace first."):
         grist_workspace_client_with_selected_ws.list_users_of_workspace()
+
+
+def test_create_worlspace(
+    grist_workspace_client_with_selected_ws: GristWorkspaceClient,
+) -> None:
+    grist_workspace_client_with_selected_ws.create_workspace("New Workspace Name")
+    assert grist_workspace_client_with_selected_ws.selected_ws_id == 2
+
+
+def test_delete_worlspace(
+    grist_workspace_client_with_selected_ws: GristWorkspaceClient,
+) -> None:
+    grist_workspace_client_with_selected_ws.delete_workspace()
+    assert grist_workspace_client_with_selected_ws.selected_ws_id is None

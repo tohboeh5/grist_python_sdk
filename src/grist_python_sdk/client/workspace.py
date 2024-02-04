@@ -34,6 +34,15 @@ class GristWorkspaceClient(GristOrganizationClient):
 
         return ws_dict  # type:ignore
 
+    def create_workspace(self, name: str) -> int:
+        id: int = self.request(
+            method="post",
+            path=f"orgs/{self.selected_org_id}/workspaces",
+            params={"name": name},
+        )
+        self.selected_ws_id = id
+        return id
+
     def select_workspace(
         self,
         ws_info: Optional[int | str],
@@ -112,3 +121,11 @@ class GristWorkspaceClient(GristOrganizationClient):
             path=f"workspaces/{self.selected_ws_id}/access",
         )["users"]
         return users
+
+    def delete_workspace(self) -> None:
+        self.request(
+            method="delete",
+            path=f"workspaces/{self.selected_ws_id}",
+        )
+        self.selected_ws_id = None
+        return None
