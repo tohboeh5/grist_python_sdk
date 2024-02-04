@@ -23,6 +23,10 @@ class GristWorkspaceClient(GristOrganizationClient):
         if self.selected_org_id is not None:
             self.select_workspace(ws_info=ws_info, ws_info_key=ws_info_key)
 
+    def select_org_by_id(self, id: Optional[int | str]) -> None:
+        self.select_ws_by_id(None)
+        super(GristWorkspaceClient, self).select_org_by_id(id)
+
     @property
     def selected_ws_id(self) -> Optional[int]:
         return self._selected_ws_id
