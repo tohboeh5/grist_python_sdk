@@ -12,7 +12,7 @@ class BaseGristClient:
     ) -> None:
         self.root_url = root_url
         self.api_key = api_key
-        self.selected_org_id = self.select_organization(org_info)
+        self.selected_org_id = self.get_organization_id(org_info)
 
     @property
     def headers_with_auth(self) -> Dict[str, str]:
@@ -26,7 +26,7 @@ class BaseGristClient:
         api_url = urljoin(self.root_url, "/api/")
         return urljoin(api_url, path)
 
-    def select_organization(self, org_info: Optional[int | str]) -> int | str:
+    def get_organization_id(self, org_info: Optional[int | str]) -> int | str:
         orgs = self.list_organization()
 
         if not orgs:
