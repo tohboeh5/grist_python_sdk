@@ -100,7 +100,7 @@ class GristWorkspaceClient(GristOrganizationClient):
             for org in orgs:
                 wss_parsed_now: List[Dict[str, Any]] = self.request(
                     method="get",
-                    path=f"orgs/{self.selected_org_id}/workspaces",
+                    path=f"orgs/{org['id']}/workspaces",
                     params={},
                 )
                 for ws_parsed in wss_parsed_now:
