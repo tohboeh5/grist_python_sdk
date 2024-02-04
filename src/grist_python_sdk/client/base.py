@@ -46,9 +46,34 @@ class BaseGristClient:
             )
         return orgs
 
+    def modify_org_name(
+        self,
+        org_id: str,
+        new_name: str,
+    ) -> Organization:
+        changes = {"name": new_name}
+        org_parsed: Dict[str, Any] = self.request(
+            method="patch",
+            path=f"orgs/{org_id}",
+            json=changes,
+        )
+        return {
+            "id": org_parsed["id"],
+            "name": org_parsed["name"],
+            "domain": org_parsed["domain"],
+            "owner": org_parsed["owner"],
+            "access": org_parsed["access"],
+            "createdAt": datetime.strptime(
+                org_parsed["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+            "updatedAt": datetime.strptime(
+                org_parsed["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+        }
+
     def request(
         self,
-        method: Literal["get", "post", "put", "delete"],
+        method: Literal["get", "post", "put", "delete", "patch"],
         path: str,
         params: Optional[Dict[str, str]] = None,
         json: Any = None,

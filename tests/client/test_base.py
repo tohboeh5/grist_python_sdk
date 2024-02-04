@@ -63,6 +63,42 @@ def test_list_orgs_endpoint(
     )
 
 
+def test_modify_org_name_endpoint(
+    requests_mock: Mocker,
+    grist_client: BaseGristClient,
+) -> None:
+    # Mocking the request function to simulate a successful modification
+    org_id = "12345"
+    new_name = "New Org Name"
+    expected_url = f"https://example.com/api/orgs/{org_id}"
+    expected_response: Dict[str, Any] = {
+        "id": 12345,
+        "name": new_name,
+        "domain": "example-domain",
+        "owner": {"id": 123, "name": "Owner Name"},
+        "access": "owners",
+        "createdAt": "2019-09-13T15:42:35.000Z",
+        "updatedAt": "2024-02-04T12:30:00.000Z",
+    }
+    requests_mock.patch(expected_url, json=expected_response, status_code=200)
+
+    # Test the modify_org_name method
+    modified_org: Organization = grist_client.modify_org_name(
+        org_id=org_id, new_name=new_name
+    )
+
+    assert modified_org["id"] == expected_response["id"]
+    assert modified_org["name"] == expected_response["name"]
+    assert modified_org["domain"] == expected_response["domain"]
+    assert modified_org["access"] == expected_response["access"]
+    assert modified_org["createdAt"] == datetime.strptime(
+        expected_response["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
+    assert modified_org["updatedAt"] == datetime.strptime(
+        expected_response["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
+
+
 def test_base_grist_client_request(
     requests_mock: Mocker,
     grist_client: BaseGristClient,
