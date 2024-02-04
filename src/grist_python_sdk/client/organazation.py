@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from grist_python_sdk.client.base import BaseGristClient
+from grist_python_sdk.client.base import GristBaseClient
 from grist_python_sdk.typing.orgs import OrganizationInfo
 
 
-class GristOrganizationClient(BaseGristClient):
+class GristOrganizationClient(GristBaseClient):
     selected_org_id: int | str
 
     def __init__(

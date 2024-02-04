@@ -1,21 +1,21 @@
 from typing import Any
 
 import pytest
-from grist_python_sdk.client.base import BaseGristClient
+from grist_python_sdk.client.base import GristBaseClient
 from requests_mock import Mocker
 
 
 @pytest.fixture
-def grist_client(requests_mock: Mocker) -> BaseGristClient:
+def grist_client(requests_mock: Mocker) -> GristBaseClient:
     root_url = "https://example.com"
     api_key = "your_api_key"
 
-    return BaseGristClient(root_url, api_key)
+    return GristBaseClient(root_url, api_key)
 
 
 def test_base_grist_client_request(
     requests_mock: Mocker,
-    grist_client: BaseGristClient,
+    grist_client: GristBaseClient,
 ) -> None:
     # Mocking the request function
     input_params = {"param": "value"}
@@ -39,7 +39,7 @@ def test_base_grist_client_request(
 
 
 def test_base_grist_client_headers_with_auth(
-    grist_client: BaseGristClient,
+    grist_client: GristBaseClient,
 ) -> None:
     expected_headers = {
         "Content-Type": "application/json",
@@ -51,7 +51,7 @@ def test_base_grist_client_headers_with_auth(
 
 
 def test_base_grist_client_get_url(
-    grist_client: BaseGristClient,
+    grist_client: GristBaseClient,
 ) -> None:
     path = "path"
     expected_url = "https://example.com/api/path"
