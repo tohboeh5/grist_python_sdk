@@ -150,7 +150,7 @@ def test_list_orgs_endpoint(
 
     orgs_response: List[
         Organization
-    ] = grist_client_with_selected_org.list_organization()
+    ] = grist_client_with_selected_org.list_organizations()
 
     assert orgs_response[0]["id"] == expected_response[0]["id"]
     assert orgs_response[0]["name"] == expected_response[0]["name"]

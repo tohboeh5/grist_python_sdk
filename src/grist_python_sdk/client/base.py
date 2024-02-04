@@ -37,7 +37,7 @@ class BaseGristClient:
         org_info: Optional[int | str],
         org_info_key: Optional[Literal["id", "name"]] = None,
     ) -> int | str:
-        orgs = self.list_organization()
+        orgs = self.list_organizations()
 
         if not orgs:
             raise ValueError("No organizations available.")
@@ -52,7 +52,7 @@ class BaseGristClient:
             # For now, just select the first organization
             return orgs[0]["id"]
 
-    def list_organization(self) -> List[Organization]:
+    def list_organizations(self) -> List[Organization]:
         orgs_parsed: List[Dict[str, Any]] = self.request(
             method="get", path="orgs", params={}
         )
@@ -80,7 +80,7 @@ class BaseGristClient:
         org_info: int | str,
         org_info_key: Optional[Literal["id", "name"]] = None,
     ) -> Organization:
-        orgs = self.list_organization()
+        orgs = self.list_organizations()
         org_info_keys = [org_info_key] if org_info_key else ["id", "name"]
 
         # If org_info is provided, confirm it is in the available organizations
