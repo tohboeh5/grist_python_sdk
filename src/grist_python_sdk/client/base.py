@@ -27,7 +27,7 @@ class BaseGristClient:
         return urljoin(api_url, path)
 
     def select_organization(self, org_info: Optional[str]) -> str:
-        orgs = self.get_orgs()
+        orgs = self.list_organization()
 
         if not orgs:
             raise ValueError("No organizations available.")
@@ -45,7 +45,7 @@ class BaseGristClient:
             # For now, just select the first organization
             return orgs[0]["id"]
 
-    def get_orgs(self) -> List[Organization]:
+    def list_organization(self) -> List[Organization]:
         orgs_parsed: List[Dict[str, Any]] = self.request(
             method="get", path="orgs", params={}
         )
@@ -69,7 +69,7 @@ class BaseGristClient:
         return orgs
 
     def describe_organization(self, org_info: str) -> Organization:
-        orgs = self.get_orgs()
+        orgs = self.list_organization()
         for org in orgs:
             if org["id"] == org_info or org["name"] == org_info:
                 return org

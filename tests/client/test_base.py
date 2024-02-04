@@ -148,7 +148,9 @@ def test_list_orgs_endpoint(
     ]
     requests_mock.get(expected_url, json=expected_response, status_code=200)
 
-    orgs_response: List[Organization] = grist_client_with_selected_org.get_orgs()
+    orgs_response: List[
+        Organization
+    ] = grist_client_with_selected_org.list_organization()
 
     assert orgs_response[0]["id"] == expected_response[0]["id"]
     assert orgs_response[0]["name"] == expected_response[0]["name"]
