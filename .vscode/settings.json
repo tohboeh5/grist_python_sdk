@@ -9,10 +9,16 @@
       "editor.defaultFormatter": "charliermarsh.ruff",
     },
     "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.testing.pytestEnabled": true,
+    "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "ruff.lint.enable": true,
     "ruff.lint.run": "onType",
     "mypy-type-checker.path": [
       ".venv/bin/mypy"
-    ]
+    ],
+    "coverage-gutters.showGutterCoverage": true,
+    "coverage-gutters.showLineCoverage": true,
+    "coverage-gutters.showRulerCoverage": true,
+    "coverage-gutters.coverageReportFileName": "coverage.xml"
   }
 

@@ -29,6 +29,20 @@ dev-dependencies = [
     "requests_mock>=1.11.0",
 ]
 
+[tool.pytest.ini_options]
+addopts = ["--cov","--cov-report", "xml"]
+testpaths =["tests"]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.html]
+directory = "tests"
+
 [tool.mypy]
 strict=true
 
