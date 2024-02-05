@@ -5,7 +5,7 @@ from grist_python_sdk.typing.orgs import UserInfo
 from grist_python_sdk.typing.workspaces import WorkspaceInfo
 
 
-class GristWorkspaceClient(OrganizationClient):
+class WorkspaceClient(OrganizationClient):
     _selected_ws_id: Optional[int] = None
 
     def __init__(
@@ -25,7 +25,7 @@ class GristWorkspaceClient(OrganizationClient):
 
     def select_org_by_id(self, id: Optional[int | str]) -> None:
         self.select_ws_by_id(None)
-        super(GristWorkspaceClient, self).select_org_by_id(id)
+        super(WorkspaceClient, self).select_org_by_id(id)
 
     @property
     def selected_ws_id(self) -> Optional[int]:
@@ -94,7 +94,7 @@ class GristWorkspaceClient(OrganizationClient):
                 method="get", path=f"orgs/{self.selected_org_id}/workspaces", params={}
             )
             for ws_parsed in wss_parsed:
-                wss.append(GristWorkspaceClient.parse_workspace_info(ws_parsed))
+                wss.append(WorkspaceClient.parse_workspace_info(ws_parsed))
         else:
             orgs = self.list_organizations()
             for org in orgs:
@@ -104,7 +104,7 @@ class GristWorkspaceClient(OrganizationClient):
                     params={},
                 )
                 for ws_parsed in wss_parsed_now:
-                    wss.append(GristWorkspaceClient.parse_workspace_info(ws_parsed))
+                    wss.append(WorkspaceClient.parse_workspace_info(ws_parsed))
         return wss
 
     def describe_workspace(self) -> WorkspaceInfo:
@@ -114,7 +114,7 @@ class GristWorkspaceClient(OrganizationClient):
             method="get",
             path=f"workspaces/{self.selected_ws_id}",
         )
-        return GristWorkspaceClient.parse_workspace_info(ws_parsed)
+        return WorkspaceClient.parse_workspace_info(ws_parsed)
 
     def rename_workspace(
         self,
@@ -128,7 +128,7 @@ class GristWorkspaceClient(OrganizationClient):
             path=f"workspaces/{self.selected_ws_id}",
             json=changes,
         )
-        return GristWorkspaceClient.parse_workspace_info(ws_parsed)
+        return WorkspaceClient.parse_workspace_info(ws_parsed)
 
     def list_users_of_workspace(self) -> List[UserInfo]:
         if self.selected_ws_id is None:
