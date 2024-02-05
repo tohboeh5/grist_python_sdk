@@ -5,7 +5,7 @@ from grist_python_sdk.client.base import BaseGristAPIClient
 from grist_python_sdk.typing.orgs import OrganizationInfo, UserInfo
 
 
-class GristOrganizationClient(BaseGristAPIClient):
+class OrganizationClient(BaseGristAPIClient):
     _selected_org_id: Optional[int | str] = None
 
     def __init__(
@@ -84,7 +84,7 @@ class GristOrganizationClient(BaseGristAPIClient):
         )
         orgs: List[OrganizationInfo] = []
         for org_parsed in orgs_parsed:
-            orgs.append(GristOrganizationClient.parse_organization_info(org_parsed))
+            orgs.append(OrganizationClient.parse_organization_info(org_parsed))
         return orgs
 
     def describe_organization(self) -> OrganizationInfo:
@@ -94,7 +94,7 @@ class GristOrganizationClient(BaseGristAPIClient):
             method="get",
             path=f"orgs/{self.selected_org_id}",
         )
-        return GristOrganizationClient.parse_organization_info(org_parsed)
+        return OrganizationClient.parse_organization_info(org_parsed)
 
     def rename_organization(
         self,
@@ -108,7 +108,7 @@ class GristOrganizationClient(BaseGristAPIClient):
             path=f"orgs/{self.selected_org_id}",
             json=changes,
         )
-        return GristOrganizationClient.parse_organization_info(org_parsed)
+        return OrganizationClient.parse_organization_info(org_parsed)
 
     def list_users_of_organization(self) -> List[UserInfo]:
         if self.selected_org_id is None:

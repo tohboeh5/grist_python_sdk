@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 
 import pytest
-from grist_python_sdk.client.organazation import GristOrganizationClient
+from grist_python_sdk.client.organazation import OrganizationClient
 from grist_python_sdk.typing.orgs import OrganizationInfo
 from requests_mock import Mocker
 from utils import (
@@ -24,7 +24,7 @@ def test_init_with_no_organizations(
     requests_mock.get(f"{mock_root_url}/api/orgs", json=[], status_code=200)
     # Test that ValueError is raised when there are no organizations available
     with pytest.raises(ValueError, match="No organizations available."):
-        GristOrganizationClient(mock_root_url, api_key)
+        OrganizationClient(mock_root_url, api_key)
 
 
 def test_init_with_no_org_info(
@@ -37,7 +37,7 @@ def test_init_with_no_org_info(
         f"{mock_root_url}/api/orgs", json=[mock_org_dict], status_code=200
     )
 
-    grist_client_with_no_org_info = GristOrganizationClient(mock_root_url, api_key)
+    grist_client_with_no_org_info = OrganizationClient(mock_root_url, api_key)
     # Mock the orgs endpoint to include at least one organization
 
     # Test that the selected_org_id is set to the first organization in the list
@@ -45,7 +45,7 @@ def test_init_with_no_org_info(
 
 
 @pytest.fixture
-def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationClient:
+def grist_client_with_selected_org(requests_mock: Mocker) -> OrganizationClient:
     api_key = "your_api_key"
     org_info = "Example Org"
 
@@ -63,25 +63,25 @@ def grist_client_with_selected_org(requests_mock: Mocker) -> GristOrganizationCl
         status_code=200,
     )
 
-    return GristOrganizationClient(mock_root_url, api_key, org_info)
+    return OrganizationClient(mock_root_url, api_key, org_info)
 
 
 def test_select_organization_with_valid_org_name(
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     grist_client_with_selected_org.select_organization("Example Org")
     assert grist_client_with_selected_org.selected_org_id == 1
 
 
 def test_select_organization_with_valid_org_id(
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     grist_client_with_selected_org.select_organization(1)
     assert grist_client_with_selected_org.selected_org_id == 1
 
 
 def test_select_organization_with_invalid_org_info(
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     with pytest.raises(
         ValueError, match="Organization with ID or name 'Nonexistent Org' not found"
@@ -90,7 +90,7 @@ def test_select_organization_with_invalid_org_info(
 
 
 def test_select_organization_with_duplicate_name(
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     with pytest.raises(
         ValueError,
@@ -100,7 +100,7 @@ def test_select_organization_with_duplicate_name(
 
 
 def test_describe_organization(
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     org_details = grist_client_with_selected_org.describe_organization()
     assert org_details is not None
@@ -109,7 +109,7 @@ def test_describe_organization(
 
 def test_describe_organization_without_selecting_org(
     requests_mock: Mocker,
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     # Reset the selected_org_id to None
     grist_client_with_selected_org.select_org_by_id(None)
@@ -120,7 +120,7 @@ def test_describe_organization_without_selecting_org(
 
 
 def test_list_orgs_endpoint(
-    requests_mock: Mocker, grist_client_with_selected_org: GristOrganizationClient
+    requests_mock: Mocker, grist_client_with_selected_org: OrganizationClient
 ) -> None:
     orgs_response: List[
         OrganizationInfo
@@ -141,7 +141,7 @@ def test_list_orgs_endpoint(
 
 def test_rename_organization_endpoint(
     requests_mock: Mocker,
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     # Mocking the request function to simulate a successful modification
     new_name = "New Org Name"
@@ -173,7 +173,7 @@ def test_rename_organization_endpoint(
 
 def test_rename_organization_without_selecting_org(
     requests_mock: Mocker,
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     # Reset the selected_org_id to None
     grist_client_with_selected_org.select_org_by_id(None)
@@ -185,7 +185,7 @@ def test_rename_organization_without_selecting_org(
 
 def test_list_users_of_organization(
     requests_mock: Mocker,
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     # Mocking the request function to simulate a successful modification
     users = grist_client_with_selected_org.list_users_of_organization()
@@ -195,7 +195,7 @@ def test_list_users_of_organization(
 
 def test_list_users_of_organization_without_selecting_org(
     requests_mock: Mocker,
-    grist_client_with_selected_org: GristOrganizationClient,
+    grist_client_with_selected_org: OrganizationClient,
 ) -> None:
     # Reset the selected_org_id to None
     grist_client_with_selected_org.select_org_by_id(None)

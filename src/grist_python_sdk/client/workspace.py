@@ -1,11 +1,11 @@
 from typing import Any, Dict, List, Literal, Optional
 
-from grist_python_sdk.client.organazation import GristOrganizationClient
+from grist_python_sdk.client.organazation import OrganizationClient
 from grist_python_sdk.typing.orgs import UserInfo
 from grist_python_sdk.typing.workspaces import WorkspaceInfo
 
 
-class GristWorkspaceClient(GristOrganizationClient):
+class GristWorkspaceClient(OrganizationClient):
     _selected_ws_id: Optional[int] = None
 
     def __init__(
