@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from requests import request
 
 
-class GristBaseClient:
+class BaseGristAPIClient:
     def __init__(self, root_url: str, api_key: str) -> None:
         self.root_url = root_url
         self.api_key = api_key
