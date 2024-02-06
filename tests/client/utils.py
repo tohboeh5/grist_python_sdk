@@ -61,3 +61,19 @@ mock_ws_dict3 = {
     "owner": {"id": 1, "name": "Owner Name"},
     "docs": [{"id": "doc1", "name": "doc1", "access": "owners", "isPinned": True}],
 }
+
+mock_ws_dict4 = {
+    "id": 4,
+    "name": "Workspace 4",
+    "access": "owners",
+    "owner": {"id": 1, "name": "Owner Name"},
+    "docs": [{"id": "doc1", "name": "doc1", "access": "owners", "isPinned": True}],
+}
+
+mock_ws_dict5 = {
+    "id": 5,
+    "name": "Workspace 5",
+    "access": "owners",
+    "owner": {"id": 1, "name": "Owner Name"},
+    "docs": [{"id": "doc1", "name": "doc1", "access": "owners", "isPinned": True}],
+}

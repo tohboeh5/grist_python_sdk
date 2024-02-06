@@ -6,6 +6,7 @@ from grist_python_sdk.typing.orgs import OrganizationInfo
 from grist_python_sdk.typing.workspaces import WorkspaceInfo
 
 from .base import BaseGristAPIClient
+from .utils import parse_organization_info, parse_workspace_info
 
 
 class GristAPIClient(BaseGristAPIClient):
@@ -51,7 +52,7 @@ class GristAPIClient(BaseGristAPIClient):
         )
         orgs: List[OrganizationInfo] = []
         for org_parsed in orgs_parsed:
-            orgs.append(OrganizationClient.parse_organization_info(org_parsed))
+            orgs.append(parse_organization_info(org_parsed))
         return orgs
 
     def list_workspaces_info(self) -> List[WorkspaceInfo]:
@@ -64,5 +65,5 @@ class GristAPIClient(BaseGristAPIClient):
                 params={},
             )
             for ws_parsed in wss_parsed_now:
-                wss.append(WorkspaceClient.parse_workspace_info(ws_parsed))
+                wss.append(parse_workspace_info(ws_parsed))
         return wss

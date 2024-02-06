@@ -1,10 +1,11 @@
-from datetime import datetime
 from typing import Any, Dict, List
 
 from grist_python_sdk.client.base import BaseGristAPIClient
 from grist_python_sdk.client.workspace import WorkspaceClient
 from grist_python_sdk.typing.orgs import OrganizationInfo, UserInfo
 from grist_python_sdk.typing.workspaces import WorkspaceInfo
+
+from .utils import parse_organization_info, parse_workspace_info
 
 
 class OrganizationClient(BaseGristAPIClient):
@@ -24,28 +25,12 @@ class OrganizationClient(BaseGristAPIClient):
     def selected_org_id(self) -> int | str:
         return self._selected_org_id
 
-    @staticmethod
-    def parse_organization_info(org_dict: Dict[str, Any]) -> OrganizationInfo:
-        return {
-            "id": org_dict["id"],
-            "name": str(org_dict["name"]),
-            "domain": org_dict["domain"],
-            "owner": org_dict["owner"],
-            "access": org_dict["access"],
-            "createdAt": datetime.strptime(
-                org_dict["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
-            "updatedAt": datetime.strptime(
-                org_dict["updatedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
-        }
-
     def describe_organization(self) -> OrganizationInfo:
         org_parsed: Dict[str, Any] = self.request(
             method="get",
             path=f"orgs/{self.selected_org_id}",
         )
-        return OrganizationClient.parse_organization_info(org_parsed)
+        return parse_organization_info(org_parsed)
 
     def rename_organization(
         self,
@@ -57,7 +42,7 @@ class OrganizationClient(BaseGristAPIClient):
             path=f"orgs/{self.selected_org_id}",
             json=changes,
         )
-        return OrganizationClient.parse_organization_info(org_parsed)
+        return parse_organization_info(org_parsed)
 
     def create_workspace(self, name: str) -> WorkspaceClient:
         ws_id: int = self.request(
@@ -80,5 +65,5 @@ class OrganizationClient(BaseGristAPIClient):
             method="get", path=f"orgs/{self.selected_org_id}/workspaces", params={}
         )
         for ws_parsed in wss_parsed:
-            wss.append(WorkspaceClient.parse_workspace_info(ws_parsed))
+            wss.append(parse_workspace_info(ws_parsed))
         return wss
