@@ -30,6 +30,17 @@ mock_org_dict3 = {
     "updatedAt": "2019-09-13T15:42:35.000Z",
 }
 
+mock_org_dict_new = {
+    "id": 1,
+    "name": "New Org",  # new
+    "domain": "example-domain",
+    "owner": {"id": 1, "name": "Owner Name"},
+    "access": "owners",
+    "createdAt": "2019-09-13T15:42:35.000Z",
+    "updatedAt": "2019-09-13T15:42:35.000Z",
+}
+
+
 mock_user_dict = {
     "id": 1,
     "email": "you@example.com",
@@ -76,4 +87,12 @@ mock_ws_dict5 = {
     "access": "owners",
     "owner": {"id": 1, "name": "Owner Name"},
     "docs": [{"id": "doc1", "name": "doc1", "access": "owners", "isPinned": True}],
+}
+
+mock_ws_new_dict = {
+    "id": 1,
+    "name": "New Ws",
+    "access": "owners",
+    "owner": {"id": 1, "name": "Owner Name"},
+    "docs": [],
 }
