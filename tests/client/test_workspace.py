@@ -59,6 +59,11 @@ def grist_client(requests_mock: Mocker) -> WorkspaceClient:
     requests_mock.patch(
         f"{mock_root_url}/api/workspaces/1", json=mock_ws_new_dict, status_code=200
     )
+    requests_mock.post(
+        f"{mock_root_url}/api/workspaces/1/docs",
+        text="2",
+        status_code=200,
+    )
 
     return WorkspaceClient(mock_root_url, api_key, ws_id=ws_id)
 
@@ -93,3 +98,8 @@ def test_list_users_of_workspace(grist_client: WorkspaceClient) -> None:
 
 def test_delete_workspace(grist_client: WorkspaceClient) -> None:
     grist_client.delete_workspace()
+
+
+def test_create_doc(grist_client: WorkspaceClient) -> None:
+    doc = grist_client.create_doc("New Doc")
+    assert doc._selected_doc_id == 2

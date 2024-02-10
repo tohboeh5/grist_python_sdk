@@ -26,3 +26,13 @@ class WorkspaceInfoRequired(TypedDict):
 
 class WorkspaceInfo(WorkspaceInfoRequired, total=False):
     orgDomain: Optional[str]
+
+
+class TableFieldsInfo(TypedDict):
+    tableRef: int
+    onDemand: bool
+
+
+class TableInfo(TypedDict):
+    id: str
+    fields: TableFieldsInfo

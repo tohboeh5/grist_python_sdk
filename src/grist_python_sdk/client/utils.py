@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 from grist_python_sdk.typing.orgs import OrganizationInfo
-from grist_python_sdk.typing.workspaces import DocumentInfo, WorkspaceInfo
+from grist_python_sdk.typing.workspaces import DocumentInfo, TableInfo, WorkspaceInfo
 
 
 def parse_organization_info(org_dict: Dict[str, Any]) -> OrganizationInfo:
@@ -32,10 +32,32 @@ def parse_workspace_info(ws_dict: Dict[str, Any]) -> WorkspaceInfo:
     ws: WorkspaceInfo = {
         "id": int(ws_dict["id"]),
         "name": str(ws_dict["name"]),
-        "owner": str(ws_dict["owner"]),  # type:ignore
         "access": str(ws_dict["access"]),  # type:ignore
         "docs": docs,
     }
     if "orgDomain" in ws_dict.keys():
         ws["orgDomain"] = str(ws_dict["orgDomain"])
     return ws
+
+
+def parse_document_info(doc_dict: Dict[str, Any]) -> DocumentInfo:
+    doc: DocumentInfo = {
+        "id": str(doc_dict["id"]),
+        "name": str(doc_dict["name"]),
+        "access": str(doc_dict["access"]),  # type:ignore
+        "isPinned": bool(doc_dict["isPinned"]),
+    }
+    if "urlId" in doc_dict.keys():
+        doc["urlId"] = str(doc_dict["urlId"])
+    return doc
+
+
+def parse_table_info(table: Dict[str, Any]) -> TableInfo:
+    doc: TableInfo = {
+        "id": str(table["id"]),
+        "fields": {
+            "tableRef": int(table["fields"]["tableRef"]),
+            "onDemand": bool(table["fields"]["onDemand"]),
+        },
+    }
+    return doc

@@ -1,9 +1,10 @@
 from typing import Any, Dict, List
 
 from grist_python_sdk.typing.orgs import UserInfo
-from grist_python_sdk.typing.workspaces import WorkspaceInfo
+from grist_python_sdk.typing.workspaces import DocumentInfo, WorkspaceInfo
 
 from .base import BaseGristAPIClient
+from .doc import DocumentClient
 from .utils import parse_workspace_info
 
 
@@ -48,3 +49,33 @@ class WorkspaceClient(BaseGristAPIClient):
             path=f"workspaces/{self.selected_ws_id}",
         )
         return None
+
+    def create_doc(self, name: str) -> DocumentClient:
+        doc_id: str = self.request(
+            method="post",
+            path=f"workspaces/{self.selected_ws_id}/docs",
+            json={"name": name},
+        )
+        return DocumentClient(self.root_url, self.api_key, doc_id)
+
+    def list_docs_info(self) -> List[DocumentInfo]:
+        docs_info = self.describe_workspace()["docs"]
+        return docs_info
+
+    def get_doc(self, doc_id: str) -> DocumentClient:
+        docs = self.list_docs_info()
+        if doc_id not in [doc["id"] for doc in docs]:
+            raise ValueError(f"Doc with id '{doc_id}' not found")
+        return DocumentClient(self.root_url, self.api_key, doc_id)
+
+    def find_doc(self, doc_name: str) -> DocumentClient:
+        docs = self.list_docs_info()
+        selected_docs_ids = [doc["id"] for doc in docs if doc["name"] == doc_name]
+
+        if len(selected_docs_ids) == 1:
+            return DocumentClient(self.root_url, self.api_key, selected_docs_ids[0])
+        elif len(selected_docs_ids) == 0:
+            # If the Doc is not found, you can raise an exception or handle as needed
+            raise ValueError(f"Doc with name '{doc_name}' not found")
+        else:
+            raise ValueError(f"Docs with name '{doc_name}' found 2 or more.")
