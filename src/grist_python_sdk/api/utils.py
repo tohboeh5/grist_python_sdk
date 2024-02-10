@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from grist_python_sdk.typing.orgs import OrganizationInfo
-from grist_python_sdk.typing.workspaces import DocumentInfo, TableInfo, WorkspaceInfo
+from .typing import DocumentInfo, OrganizationInfo, TableInfo, WorkspaceInfo
 
 
 def parse_organization_info(org_dict: Dict[str, Any]) -> OrganizationInfo:
