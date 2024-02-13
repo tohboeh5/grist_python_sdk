@@ -18,7 +18,7 @@ def list_workspaces_info(
     return wss
 
 
-def describe_organization(client: GristAPIClient, ws_id: int) -> WorkspaceInfo:
+def describe_workspace(client: GristAPIClient, ws_id: int) -> WorkspaceInfo:
     ws_parsed: Dict[str, Any] = client.request(method="get", path=f"workspaces/{ws_id}")
     return parse_workspace_info(ws_parsed)
 
@@ -36,13 +36,12 @@ def change_users_of_workspace(
     delta_info: Dict[str, Any] = {"delta": {"users": users_info}}
     users: List[UserInfo] = client.request(
         method="patch", path=f"workspaces/{ws_id}/access", json=delta_info
-    )
+    )["users"]
     return users
 
 
 def delete_workspace(client: GristAPIClient, ws_id: int) -> None:
     client.request(method="delete", path=f"workspaces/{ws_id}")
-    return None
 
 
 def rename_workspace(
@@ -55,10 +54,9 @@ def rename_workspace(
     return parse_workspace_info(ws_parsed)
 
 
-def create_workspace(client: GristAPIClient, org_id: str | int, name: str) -> int:
-    ws_id: int = client.request(
+def create_workspace(client: GristAPIClient, org_id: str | int, name: str) -> None:
+    client.request(
         method="post",
         path=f"orgs/{org_id}/workspaces",
         params={"name": name},
     )
-    return ws_id

@@ -26,16 +26,9 @@ def describe_organization(
     return parse_organization_info(org_parsed)
 
 
-def rename_organization(
-    client: GristAPIClient, org_id: int | str, name: str
-) -> OrganizationInfo:
+def rename_organization(client: GristAPIClient, org_id: int | str, name: str) -> None:
     changes = {"name": name}
-    org_parsed: Dict[str, Any] = client.request(
-        method="patch",
-        path=f"orgs/{org_id}",
-        json=changes,
-    )
-    return parse_organization_info(org_parsed)
+    client.request(method="patch", path=f"orgs/{org_id}", json=changes)
 
 
 def list_users_of_organization(
@@ -54,5 +47,5 @@ def change_users_of_organization(
     delta_info: Dict[str, Any] = {"delta": {"users": users_info}}
     users: List[UserInfo] = client.request(
         method="patch", path=f"orgs/{org_id}/access", json=delta_info
-    )
+    )["users"]
     return users
