@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Literal, Optional, TypedDict
+from typing import Any, Dict, List, Literal, Optional, TypedDict
 
 Access = Literal["owners", "editors", "viewers", "members", None]
 
@@ -55,3 +55,8 @@ class TableFieldsInfo(TypedDict):
 class TableInfo(TypedDict):
     id: str
     fields: TableFieldsInfo
+
+
+class RecordInfo(TypedDict):
+    id: int
+    fields: Dict[str, Any]

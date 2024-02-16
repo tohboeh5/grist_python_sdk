@@ -25,7 +25,7 @@ class GristAPIClient:
         self,
         method: Literal["get", "post", "put", "delete", "patch"],
         path: str,
-        params: Optional[Dict[str, str]] = None,
+        params: Optional[Dict[str, Any]] = None,
         json: Any = None,
         return_text: bool = False,
     ) -> Any:
