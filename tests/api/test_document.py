@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 import pytest
 from grist_python_sdk.api.document import (
     change_doc_pinned_state,
@@ -8,6 +10,7 @@ from grist_python_sdk.api.document import (
     list_users_of_doc,
     rename_doc,
 )
+from grist_python_sdk.api.typing import Access
 from grist_python_sdk.client import GristAPIClient
 from requests_mock import Mocker
 
@@ -124,7 +127,9 @@ def test_change_users_of_doc(
     grist_client: GristAPIClient, requests_mock: Mocker
 ) -> None:
     doc_id = "145"
-    users_info = [{"foo@getgrist.com": "owners", "bar@getgrist.com": None}]
+    users_info: List[Dict[str, Access]] = [
+        {"foo@getgrist.com": "owners", "bar@getgrist.com": None}
+    ]
     requests_mock.patch(
         f"{mock_root_url}/api/docs/{doc_id}/access",
         status_code=200,

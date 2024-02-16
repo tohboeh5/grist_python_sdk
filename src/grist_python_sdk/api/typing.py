@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Literal, Optional, TypedDict
 
-Access = Literal["owners", "editors", "viewers"]
+Access = Literal["owners", "editors", "viewers", "members", None]
 
 
 class UserInfoRequired(TypedDict):

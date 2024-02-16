@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from grist_python_sdk.client import GristAPIClient
 
@@ -47,7 +47,7 @@ def list_users_of_doc(client: GristAPIClient, doc_id: str) -> List[UserInfo]:
 
 
 def change_users_of_doc(
-    client: GristAPIClient, doc_id: str, users_info: List[Dict[str, Access]]
+    client: GristAPIClient, doc_id: str, users_info: List[Dict[str, Optional[Access]]]
 ) -> List[UserInfo]:
     delta_info: Dict[str, Any] = {"delta": {"users": users_info}}
     users: List[UserInfo] = client.request(

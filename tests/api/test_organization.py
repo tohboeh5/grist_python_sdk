@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 import pytest
 from grist_python_sdk.api.organazation import (
     change_users_of_organization,
@@ -6,6 +8,7 @@ from grist_python_sdk.api.organazation import (
     list_users_of_organization,
     rename_organization,
 )
+from grist_python_sdk.api.typing import Access
 from grist_python_sdk.client import GristAPIClient
 from requests_mock import Mocker
 
@@ -109,7 +112,9 @@ def test_change_users_of_organization(
     grist_client: GristAPIClient, requests_mock: Mocker
 ) -> None:
     org_id = 42
-    users_info = [{"foo@getgrist.com": "owners", "bar@getgrist.com": None}]
+    users_info: List[Dict[str, Access]] = [
+        {"foo@getgrist.com": "owners", "bar@getgrist.com": None}
+    ]
     requests_mock.patch(
         f"{mock_root_url}/api/orgs/{org_id}/access",
         status_code=200,

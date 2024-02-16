@@ -1,4 +1,7 @@
+from typing import Dict, List
+
 import pytest
+from grist_python_sdk.api.typing import Access
 from grist_python_sdk.api.workspace import (
     change_users_of_workspace,
     create_workspace,
@@ -115,7 +118,9 @@ def test_change_users_of_workspace(
     grist_client: GristAPIClient, requests_mock: Mocker
 ) -> None:
     workspace_id = 97
-    users_info = [{"foo@getgrist.com": "owners", "bar@getgrist.com": None}]
+    users_info: List[Dict[str, Access]] = [
+        {"foo@getgrist.com": "owners", "bar@getgrist.com": None}
+    ]
     requests_mock.patch(
         f"{mock_root_url}/api/workspaces/{workspace_id}/access",
         status_code=200,
