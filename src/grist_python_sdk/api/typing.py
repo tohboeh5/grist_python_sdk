@@ -60,3 +60,21 @@ class TableInfo(TypedDict):
 class RecordInfo(TypedDict):
     id: int
     fields: Dict[str, Any]
+
+
+class ColumnFieldsInfo(TypedDict, total=False):
+    type: Optional[str]
+    label: Optional[str]
+    formula: Optional[str]
+    isFormula: Optional[bool]
+    widgetOptions: Optional[Dict[str, Any]]
+    untieColIdFromLabel: Optional[bool]
+    recalcWhen: Optional[int]
+    visibleCol: Optional[int]
+    recalcDeps: Optional[str]
+    colId: Optional[str]
+
+
+class ColumnInfo(TypedDict, total=False):
+    id: str
+    fields: ColumnFieldsInfo
