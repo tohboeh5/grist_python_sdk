@@ -188,6 +188,7 @@ def test_create_workspace(grist_client: GristAPIClient, requests_mock: Mocker) -
     requests_mock.post(
         f"{mock_root_url}/api/orgs/{org_id}/workspaces",
         status_code=200,
-        json={"name": "Retreat Docs"},
+        text="8b97c8db-b4df-4b34-b72c-17459e70140a",
     )
-    create_workspace(grist_client, org_id, name)
+    ws_id = create_workspace(grist_client, org_id, name)
+    assert ws_id == "8b97c8db-b4df-4b34-b72c-17459e70140a"

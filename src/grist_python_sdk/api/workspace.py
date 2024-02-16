@@ -54,9 +54,11 @@ def rename_workspace(
     return parse_workspace_info(ws_parsed)
 
 
-def create_workspace(client: GristAPIClient, org_id: str | int, name: str) -> None:
-    client.request(
+def create_workspace(client: GristAPIClient, org_id: str | int, name: str) -> str:
+    ws_id: str = client.request(
         method="post",
         path=f"orgs/{org_id}/workspaces",
         params={"name": name},
+        return_text=True,
     )
+    return ws_id

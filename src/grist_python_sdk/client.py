@@ -27,6 +27,7 @@ class GristAPIClient:
         path: str,
         params: Optional[Dict[str, str]] = None,
         json: Any = None,
+        return_text: bool = False,
     ) -> Any:
         response = request(
             method=method,
@@ -36,4 +37,7 @@ class GristAPIClient:
             json=json,
         )
         response.raise_for_status()
-        return response.json()
+        if not return_text:
+            return response.json()
+        else:
+            return response.text
