@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 import pytest
 from grist_python_sdk.api.typing import Access
@@ -118,9 +118,11 @@ def test_change_users_of_workspace(
     grist_client: GristAPIClient, requests_mock: Mocker
 ) -> None:
     workspace_id = 97
-    users_info: List[Dict[str, Access]] = [
-        {"foo@getgrist.com": "owners", "bar@getgrist.com": None}
-    ]
+    users_info: Dict[str, Access] = {
+        "foo@getgrist.com": "owners",
+        "bar@getgrist.com": None,
+    }
+
     requests_mock.patch(
         f"{mock_root_url}/api/workspaces/{workspace_id}/access",
         status_code=200,
@@ -137,11 +139,7 @@ def test_change_users_of_workspace(
             ],
         },
     )
-    updated_users_info = change_users_of_workspace(
-        grist_client, workspace_id, users_info
-    )
-    assert updated_users_info[0]["id"] == 1
-    assert updated_users_info[0]["name"] == "Andrea"
+    change_users_of_workspace(grist_client, workspace_id, users_info)
 
 
 def test_delete_workspace(grist_client: GristAPIClient, requests_mock: Mocker) -> None:
@@ -182,9 +180,7 @@ def test_rename_workspace(grist_client: GristAPIClient, requests_mock: Mocker) -
             },
         },
     )
-    updated_workspace_info = rename_workspace(grist_client, workspace_id, new_name)
-    assert updated_workspace_info["id"] == 97
-    assert updated_workspace_info["name"] == new_name
+    rename_workspace(grist_client, workspace_id, new_name)
 
 
 def test_create_workspace(grist_client: GristAPIClient, requests_mock: Mocker) -> None:

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 import pytest
 from grist_python_sdk.api.document import (
@@ -127,16 +127,15 @@ def test_change_users_of_doc(
     grist_client: GristAPIClient, requests_mock: Mocker
 ) -> None:
     doc_id = "145"
-    users_info: List[Dict[str, Access]] = [
-        {"foo@getgrist.com": "owners", "bar@getgrist.com": None}
-    ]
+    users_info: Dict[str, Access] = {
+        "foo@getgrist.com": "owners",
+        "bar@getgrist.com": None,
+    }
+
     requests_mock.patch(
         f"{mock_root_url}/api/docs/{doc_id}/access",
         status_code=200,
         text='{"maxInheritedRole": "owners", "users": [{"id": 1, "name": "Andrea", "email": "andrea@getgrist.com", "access": "owners", "parentAccess": "owners"}]}',
     )
 
-    changed_users = change_users_of_doc(grist_client, doc_id, users_info)
-    assert len(changed_users) == 1
-    assert changed_users[0]["id"] == 1
-    assert changed_users[0]["name"] == "Andrea"
+    change_users_of_doc(grist_client, doc_id, users_info)

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from grist_python_sdk.client import GristAPIClient
 
@@ -14,11 +14,12 @@ def create_doc(
         path=f"workspaces/{ws_id}/docs",
         json={"name": name, "isPinned": pinned},
         return_type="text",
-    )
+    ).replace('"', "")
     return doc_id
 
 
 def describe_doc(client: GristAPIClient, doc_id: str) -> DocumentInfo:
+    print(f"docs/{doc_id}")
     doc_parsed: Dict[str, Any] = client.request(method="get", path=f"docs/{doc_id}")
     return parse_document_info(doc_parsed)
 
@@ -47,10 +48,9 @@ def list_users_of_doc(client: GristAPIClient, doc_id: str) -> List[UserInfo]:
 
 
 def change_users_of_doc(
-    client: GristAPIClient, doc_id: str, users_info: List[Dict[str, Optional[Access]]]
-) -> List[UserInfo]:
-    delta_info: Dict[str, Any] = {"delta": {"users": users_info}}
-    users: List[UserInfo] = client.request(
-        method="patch", path=f"docs/{doc_id}/access", json=delta_info
-    )["users"]
-    return users
+    client: GristAPIClient, doc_id: str, users_info: Dict[str, Access]
+) -> None:
+    delta_info: Dict[str, Any] = {
+        "delta": {"maxInheritedRole": "owners", "users": users_info}
+    }
+    client.request(method="patch", path=f"docs/{doc_id}/access", json=delta_info)
