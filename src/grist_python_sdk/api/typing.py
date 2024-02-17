@@ -78,3 +78,14 @@ class ColumnFieldsInfo(TypedDict, total=False):
 class ColumnInfo(TypedDict, total=False):
     id: str
     fields: ColumnFieldsInfo
+
+
+class AttachmentMetadataFieldsInfo(TypedDict):
+    fileName: str
+    fileSize: int
+    timeUploaded: str
+
+
+class AttachmentMetadataInfo(TypedDict):
+    id: int
+    fields: AttachmentMetadataFieldsInfo

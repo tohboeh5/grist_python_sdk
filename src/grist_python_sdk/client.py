@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 from urllib.parse import urljoin
 
 from requests import request
@@ -27,17 +27,34 @@ class GristAPIClient:
         path: str,
         params: Optional[Dict[str, Any]] = None,
         json: Any = None,
-        return_text: bool = False,
+        filenames: Optional[List[str]] = None,
+        return_type: Literal["json", "text", "content"] = "json",
     ) -> Any:
-        response = request(
-            method=method,
-            url=self.get_url(path),
-            params=params,
-            headers=self.headers_with_auth,
-            json=json,
-        )
-        response.raise_for_status()
-        if not return_text:
-            return response.json()
+        if filenames is not None:
+            files = [
+                ("upload", (open(filename, "rb").name, open(filename, "rb")))
+                for filename in filenames
+            ]
+            response = request(
+                method=method,
+                url=self.get_url(path),
+                params=params,
+                headers=self.headers_with_auth,
+                files=files,
+                json=json,
+            )
         else:
+            response = request(
+                method=method,
+                url=self.get_url(path),
+                params=params,
+                headers=self.headers_with_auth,
+                json=json,
+            )
+        response.raise_for_status()
+        if return_type == "json":
+            return response.json()
+        elif return_type == "text":
             return response.text
+        elif return_type == "content":
+            return response.content

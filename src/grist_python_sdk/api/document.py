@@ -13,7 +13,7 @@ def create_doc(
         method="post",
         path=f"workspaces/{ws_id}/docs",
         json={"name": name, "isPinned": pinned},
-        return_text=True,
+        return_type="text",
     )
     return doc_id
 

@@ -59,6 +59,6 @@ def create_workspace(client: GristAPIClient, org_id: str | int, name: str) -> st
         method="post",
         path=f"orgs/{org_id}/workspaces",
         params={"name": name},
-        return_text=True,
+        return_type="text",
     )
     return ws_id

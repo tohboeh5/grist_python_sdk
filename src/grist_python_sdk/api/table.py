@@ -20,7 +20,7 @@ def modify_tables(
 ) -> None:
     path = f"docs/{doc_id}/tables"
     payload = {"tables": tables}
-    client.request(method="patch", path=path, json=payload, return_text=True)
+    client.request(method="patch", path=path, json=payload, return_type="text")
 
 
 class TableWithColumnsInfo(TypedDict):

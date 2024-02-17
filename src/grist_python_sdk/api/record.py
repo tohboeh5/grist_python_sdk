@@ -54,7 +54,7 @@ def patch_records(
     params = {"noparse": noparse} if noparse is not None else None
     payload = {"records": records}
     client.request(
-        method="patch", path=path, params=params, json=payload, return_text=True
+        method="patch", path=path, params=params, json=payload, return_type="text"
     )
 
 
@@ -79,5 +79,5 @@ def put_records(
     }
     payload = {"records": records}
     client.request(
-        method="put", path=path, params=params, json=payload, return_text=True
+        method="put", path=path, params=params, json=payload, return_type="text"
     )

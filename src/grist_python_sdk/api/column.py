@@ -32,7 +32,7 @@ def patch_columns(
 ) -> None:
     path = f"docs/{doc_id}/tables/{table_id}/columns"
     payload = {"columns": columns}
-    client.request(method="patch", path=path, json=payload, return_text=True)
+    client.request(method="patch", path=path, json=payload, return_type="text")
 
 
 def put_columns(
@@ -48,7 +48,7 @@ def put_columns(
     params = {"noadd": noadd, "noupdate": noupdate, "replaceall": replaceall}
     payload = {"columns": columns}
     client.request(
-        method="put", path=path, params=params, json=payload, return_text=True
+        method="put", path=path, params=params, json=payload, return_type="text"
     )
 
 
@@ -56,4 +56,4 @@ def delete_column(
     client: GristAPIClient, doc_id: str, table_id: str, col_id: str
 ) -> None:
     path = f"docs/{doc_id}/tables/{table_id}/columns/{col_id}"
-    client.request(method="delete", path=path, return_text=True)
+    client.request(method="delete", path=path, return_type="text")
