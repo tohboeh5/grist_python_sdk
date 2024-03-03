@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 from urllib.parse import urljoin
 
@@ -31,10 +32,10 @@ class GristAPIClient:
         return_type: Literal["json", "text", "content"] = "json",
     ) -> Any:
         if filenames is not None:
-            files = [
-                ("upload", (open(filename, "rb").name, open(filename, "rb")))
+            files = {
+                "upload": (Path(filename).name, open(filename, "rb"))
                 for filename in filenames
-            ]
+            }
             response = request(
                 method=method,
                 url=self.get_url(path),

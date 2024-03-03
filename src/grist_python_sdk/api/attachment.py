@@ -40,6 +40,7 @@ def upload_attachments(
 ) -> List[int]:
     path = f"docs/{doc_id}/attachments"
     response: List[Any] = client.request(method="post", path=path, filenames=filenames)
+    print(response)
     return [int(id) for id in response]
 
 
